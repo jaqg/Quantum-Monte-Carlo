@@ -279,24 +279,27 @@ def Pure_diffusion_MC(a, nmc, dt, tau, eref):
     return energy/norm, naccept/nmc
 
 # Variational Monte Carlo
+class QMC:
+  def __init__(self, E, s, A, sA):
+    self.E = E    # Energy
+    self.s = s    # sigma
+    self.A = A    # ratio
+    self.sA = sA  # sigma_ratio
+
 def VMC(a, mc_trials, nmc, lim, dt):
     # -----------------------------------------------------------------------------
     # Monte Carlo algorithm
-    section('Variational Monte Carlo')
     # -----------------------------------------------------------------------------
     
     mc_energy = []
     for i in range(mc_trials):
         mc_energy.append(MC(a, nmc, lim))
     
-    # Print results
-    variational_mc_E = average(mc_energy)
-    variational_mc_sigma = error(mc_energy)
-    print('E = ', variational_mc_E, '+-', variational_mc_sigma)
+    # Store the results in the QMC class
+    sVMC = QMC(average(mc_energy), error(mc_energy), 0., 0.)
     
     # -----------------------------------------------------------------------------
     # Metropolis algorithm
-    section('Metropolis (symmetric) MC')
     # -----------------------------------------------------------------------------
     dt = 1.
     
@@ -308,16 +311,10 @@ def VMC(a, mc_trials, nmc, lim, dt):
         metropolis_sym_ratio.append(y)
     
     # Print results
-    sym_metropolis_E = average(metropolis_sym_E)
-    sym_metropolis_sigma_E = error(metropolis_sym_E)
-    sym_metropolis_ratio = average(metropolis_sym_ratio)
-    sym_metropolis_sigma_ratio = error(metropolis_sym_ratio)
+    syMe = QMC(average(metropolis_sym_E), error(metropolis_sym_E), 
+               average(metropolis_sym_ratio), error(metropolis_sym_ratio))
     
-    print('E = ', sym_metropolis_E, '+-', sym_metropolis_sigma_E)
-    print('Ratio = ', sym_metropolis_ratio, '+-', sym_metropolis_sigma_ratio)
-    
-    section('Metropolis (generalized) MC')
-    
+    # Generalized Metropolis
     metropolis_gen_E = []
     metropolis_gen_ratio = []
     for i in range(mc_trials):
@@ -326,35 +323,44 @@ def VMC(a, mc_trials, nmc, lim, dt):
         metropolis_gen_ratio.append(y)
     
     # Print results
-    gen_metropolis_E = average(metropolis_gen_E)
-    gen_metropolis_sigma_E = error(metropolis_gen_E)
-    gen_metropolis_ratio = average(metropolis_gen_ratio)
-    gen_metropolis_sigma_ratio = error(metropolis_gen_ratio)
+    geMe = QMC(average(metropolis_gen_E), error(metropolis_gen_E), 
+               average(metropolis_gen_ratio), error(metropolis_gen_ratio))
+
+    return sVMC, syMe, geMe
+
+# Print results of VMC
+def output_VMC(sVMC, syMe, geMe):
+    # -----------------------------------------------------------------------------
+    # Monte Carlo algorithm
+    section('Variational Monte Carlo')
+    # -----------------------------------------------------------------------------
     
-    print('E = ', gen_metropolis_E, '+-', gen_metropolis_sigma_E)
-    print('Ratio = ', gen_metropolis_ratio, '+-', gen_metropolis_sigma_ratio)
+    print('E = ', sVMC.E, '+-', sVMC.s)
+    
+    # -----------------------------------------------------------------------------
+    # Metropolis algorithm
+    section('Metropolis (symmetric) MC')
+    # -----------------------------------------------------------------------------
+    
+    print('E = ', syMe.E, '+-', syMe.s)
+    print('Ratio = ', syMe.A, '+-', syMe.sA)
+    
+    # -----------------------------------------------------------------------------
+    section('Metropolis (generalized) MC')
+    # -----------------------------------------------------------------------------
+    
+    print('E = ', geMe.E, '+-', geMe.s)
+    print('Ratio = ', geMe.A, '+-', geMe.sA)
 
     # =============================================================================
     # Summary
     section('Summary')
     # =============================================================================
     methods = ['VMC', 'Symmetric Metropolis', 'Generalized Metropolis']
-    
-    energies = [variational_mc_E,
-                sym_metropolis_E,
-                gen_metropolis_E]    
-
-    errors = [variational_mc_sigma,
-              sym_metropolis_sigma_E,
-              gen_metropolis_sigma_E]
-    
-    ratios = [0.,
-              sym_metropolis_ratio,
-              gen_metropolis_ratio]
-    
-    sigma_ratios = [0.,
-                    sym_metropolis_sigma_ratio,
-                    gen_metropolis_sigma_ratio]
+    energies = [sVMC.E, syMe.E, geMe.E]
+    errors = [sVMC.s, syMe.s, geMe.s]
+    ratios = [sVMC.A, syMe.A, geMe.A]
+    sigma_ratios = [sVMC.sA, syMe.sA, geMe.sA]
     
     data = pd.DataFrame({'Method': methods, 'Energy, E': energies, 'Sigma_E': errors,
                          'Ratio, A': ratios, 'Sigma_A': sigma_ratios})

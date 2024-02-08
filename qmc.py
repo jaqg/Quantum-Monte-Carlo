@@ -1,9 +1,9 @@
 import matplotlib.pyplot as plt
 import pandas as pd
 
-from IO import read_input, print_table, section, title, end
+from IO import read_xyz, read_input, print_table, section, title, end
 from hydrogen import e_loc
-from MonteCarlo import estimated_energy, variance_eloc, VMC, PDMC
+from MonteCarlo import estimated_energy, variance_eloc, VMC, PDMC, output_VMC
 from debug import test_potential
 from plots import plot_eloc_a, plot_eloc_xcoord, plot_psi_xcoord
 
@@ -31,6 +31,8 @@ if __name__ == "__main__":
 # -----------------------------------------------------------------------------
 print('Reading input...')
 calculation_type, a, nmc, mc_trials, lim, dt, tau, eref = read_input('INPUT')
+nxyz = read_xyz('XYZ')
+print('nxyz:\n', nxyz)
 
 # =============================================================================
 # Find eigenfunctions
@@ -88,7 +90,10 @@ if calculation_type == 'VMC':
     # -------------------------------------------------------------------------
     # Variational Monte Carlo
     # -------------------------------------------------------------------------
-    VMC(a, mc_trials, nmc, lim, dt)
+    # TODO: loop sobre cada atomo y para nelectrons
+    # TODO: pasar r como input
+    sVMC, syMe, geMe = VMC(a, mc_trials, nmc, lim, dt)
+    output_VMC(sVMC, syMe, geMe)
 
 elif calculation_type == 'PDMC':
     # -------------------------------------------------------------------------
