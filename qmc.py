@@ -32,7 +32,6 @@ if __name__ == "__main__":
 print('Reading input...')
 calculation_type, a, nmc, mc_trials, lim, dt, tau, eref = read_input('INPUT')
 nxyz = read_xyz('XYZ')
-print('nxyz:\n', nxyz)
 
 # =============================================================================
 # Find eigenfunctions
@@ -90,15 +89,16 @@ if calculation_type == 'VMC':
     # -------------------------------------------------------------------------
     # Variational Monte Carlo
     # -------------------------------------------------------------------------
-    # TODO: loop sobre cada atomo y para nelectrons
     # TODO: pasar r como input
-    sVMC, syMe, geMe = VMC(a, mc_trials, nmc, lim, dt)
+    sVMC, syMe, geMe = VMC(nxyz['nelectrons'], a, mc_trials, nmc, lim, dt)
     output_VMC(sVMC, syMe, geMe)
 
 elif calculation_type == 'PDMC':
     # -------------------------------------------------------------------------
     # Pure diffusion Monte Carlo
     # -------------------------------------------------------------------------
+    # TODO: loop sobre cada atomo y para nelectrons
+    # TODO: pasar r como input
     PDMC(a, mc_trials, nmc, dt, tau, eref)
 
 else:

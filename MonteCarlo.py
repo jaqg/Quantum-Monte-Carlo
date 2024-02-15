@@ -286,45 +286,71 @@ class QMC:
     self.A = A    # ratio
     self.sA = sA  # sigma_ratio
 
-def VMC(a, mc_trials, nmc, lim, dt):
+def VMC(electrons, a, mc_trials, nmc, lim, dt):
     # -----------------------------------------------------------------------------
     # Monte Carlo algorithm
     # -----------------------------------------------------------------------------
     
-    mc_energy = []
-    for i in range(mc_trials):
-        mc_energy.append(MC(a, nmc, lim))
-    
+    mc_energy = 0.
+    mc_energy_error = 0.
+    for nelectrons in electrons:
+        for n in range(nelectrons):
+            # Compute the MC energy for each electron
+            mc_energy_lst = []
+            for i in range(mc_trials):
+                mc_energy_lst.append(MC(a, nmc, lim))
+            # and add it to the total
+            mc_energy += average(mc_energy_lst)
+            mc_energy_error += error(mc_energy_lst)
+
     # Store the results in the QMC class
-    sVMC = QMC(average(mc_energy), error(mc_energy), 0., 0.)
+    sVMC = QMC(mc_energy, mc_energy_error, 0., 0.)
     
     # -----------------------------------------------------------------------------
     # Metropolis algorithm
     # -----------------------------------------------------------------------------
     dt = 1.
     
-    metropolis_sym_E = []
-    metropolis_sym_ratio = []
-    for i in range(mc_trials):
-        x, y = Metropolis_symmetric_MC(a, nmc, dt)
-        metropolis_sym_E.append(x)
-        metropolis_sym_ratio.append(y)
+    msE = 0.
+    msE_error = 0.
+    msR = 0.
+    msR_error = 0.
+    for nelectrons in electrons:
+        for n in range(nelectrons):
+            metropolis_sym_E = []
+            metropolis_sym_ratio = []
+            for i in range(mc_trials):
+                x, y = Metropolis_symmetric_MC(a, nmc, dt)
+                metropolis_sym_E.append(x)
+                metropolis_sym_ratio.append(y)
+            msE += average(metropolis_sym_E)
+            msE_error += error(metropolis_sym_E)
+            msR += average(metropolis_sym_ratio)
+            msR_error += error(metropolis_sym_ratio)
     
     # Print results
-    syMe = QMC(average(metropolis_sym_E), error(metropolis_sym_E), 
-               average(metropolis_sym_ratio), error(metropolis_sym_ratio))
+    syMe = QMC(msE, msE_error, msR, msR_error)
     
     # Generalized Metropolis
-    metropolis_gen_E = []
-    metropolis_gen_ratio = []
-    for i in range(mc_trials):
-        x, y = Metropolis_generalized_MC(a, nmc, dt)
-        metropolis_gen_E.append(x)
-        metropolis_gen_ratio.append(y)
+    mgE = 0.
+    mgE_error = 0.
+    mgR = 0.
+    mgR_error = 0.
+    for nelectrons in electrons:
+        for n in range(nelectrons):
+            metropolis_gen_E = []
+            metropolis_gen_ratio = []
+            for i in range(mc_trials):
+                x, y = Metropolis_generalized_MC(a, nmc, dt)
+                metropolis_gen_E.append(x)
+                metropolis_gen_ratio.append(y)
+            mgE += average(metropolis_gen_E)
+            mgE_error += error(metropolis_gen_E)
+            mgR += average(metropolis_gen_ratio)
+            mgR_error += error(metropolis_gen_ratio)
     
     # Print results
-    geMe = QMC(average(metropolis_gen_E), error(metropolis_gen_E), 
-               average(metropolis_gen_ratio), error(metropolis_gen_ratio))
+    geMe = QMC(mgE, mgE_error, mgR, mgR_error)
 
     return sVMC, syMe, geMe
 
