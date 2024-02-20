@@ -1,5 +1,5 @@
 # Type of calculation: VMC or PDMC
-VMC
+PDMC
 # Amplitude of the wavefunction; exponent factor, a
 1.2
 # Number of steps for the MC calculation

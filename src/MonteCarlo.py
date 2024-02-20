@@ -1,4 +1,4 @@
-from IO import print_table, section
+from IO import print_table, section, float_format
 from hydrogen import e_loc, psi
 import numpy as np
 import pandas as pd
@@ -88,7 +88,7 @@ def error(a):
     return np.sqrt(variance(a))
 
 # Monte Carlo algorithm
-def MC(a, nmc, lim):
+def MC(a, r, nmc, lim):
     # Initialize variables
     local_energy = 0.
     norm = 0.
@@ -203,7 +203,7 @@ def Metropolis_generalized_MC(a, nmc, dt):
     return local_energy/nmc, n_accept/nmc
 
 # Pure Diffusion Monte Carlo
-def Pure_diffusion_MC(a, nmc, dt, tau, eref):
+def Pure_diffusion_MC(a, r, nmc, dt, tau, eref):
     # Initialize variables
     energy = 0.
     naccept = 0
@@ -213,8 +213,11 @@ def Pure_diffusion_MC(a, nmc, dt, tau, eref):
     w = 1.
     taun = 0.
 
-    # Generate random position & drift vector
-    rn = np.random.normal(loc=0., scale=1., size=(3))
+    # Compute r0
+    r0 = np.sqrt(np.dot(r,r))
+
+    # Generate random position & drift vector around r0 
+    rn = np.random.normal(loc=r0, scale=1., size=(3))
     dn = drift_vector(a, rn)
     psin = psi(a, rn)
 
@@ -286,19 +289,20 @@ class QMC:
     self.A = A    # ratio
     self.sA = sA  # sigma_ratio
 
-def VMC(electrons, a, mc_trials, nmc, lim, dt):
+def VMC(nxyz, a, mc_trials, nmc, lim, dt):
     # -----------------------------------------------------------------------------
     # Monte Carlo algorithm
     # -----------------------------------------------------------------------------
-    
     mc_energy = 0.
     mc_energy_error = 0.
-    for nelectrons in electrons:
+    for index, row in nxyz.iterrows():
+        nelectrons = row['nelectrons']
+        r = [row['x'], row['y'], row['z']]
         for n in range(nelectrons):
             # Compute the MC energy for each electron
             mc_energy_lst = []
             for i in range(mc_trials):
-                mc_energy_lst.append(MC(a, nmc, lim))
+                mc_energy_lst.append(MC(a, r, nmc, lim))
             # and add it to the total
             mc_energy += average(mc_energy_lst)
             mc_energy_error += error(mc_energy_lst)
@@ -315,7 +319,8 @@ def VMC(electrons, a, mc_trials, nmc, lim, dt):
     msE_error = 0.
     msR = 0.
     msR_error = 0.
-    for nelectrons in electrons:
+    for index, row in nxyz.iterrows():
+        nelectrons = row['nelectrons']
         for n in range(nelectrons):
             metropolis_sym_E = []
             metropolis_sym_ratio = []
@@ -336,7 +341,8 @@ def VMC(electrons, a, mc_trials, nmc, lim, dt):
     mgE_error = 0.
     mgR = 0.
     mgR_error = 0.
-    for nelectrons in electrons:
+    for index, row in nxyz.iterrows():
+        nelectrons = row['nelectrons']
         for n in range(nelectrons):
             metropolis_gen_E = []
             metropolis_gen_ratio = []
@@ -361,22 +367,22 @@ def output_VMC(sVMC, syMe, geMe):
     section('Variational Monte Carlo')
     # -----------------------------------------------------------------------------
     
-    print('E = ', sVMC.E, '+-', sVMC.s)
+    print('E = ', float_format(sVMC.E), '+-', float_format(sVMC.s))
     
     # -----------------------------------------------------------------------------
     # Metropolis algorithm
     section('Metropolis (symmetric) MC')
     # -----------------------------------------------------------------------------
     
-    print('E = ', syMe.E, '+-', syMe.s)
-    print('Ratio = ', syMe.A, '+-', syMe.sA)
+    print('E = ', float_format(syMe.E), '+-', float_format(syMe.s))
+    print('Ratio = ', float_format(syMe.A), '+-', float_format(syMe.sA))
     
     # -----------------------------------------------------------------------------
     section('Metropolis (generalized) MC')
     # -----------------------------------------------------------------------------
     
-    print('E = ', geMe.E, '+-', geMe.s)
-    print('Ratio = ', geMe.A, '+-', geMe.sA)
+    print('E = ', float_format(geMe.E), '+-', float_format(geMe.s))
+    print('Ratio = ', float_format(geMe.A), '+-', float_format(geMe.sA))
 
     # =============================================================================
     # Summary
@@ -393,42 +399,55 @@ def output_VMC(sVMC, syMe, geMe):
     print_table("", data)
 
 # Pure Diffusion Monte Carlo
-def PDMC(a, mc_trials, nmc, dt, tau, eref):
+def PDMC(nxyz, a, mc_trials, nmc, dt, tau, eref):
+    # -----------------------------------------------------------------------------
+    # Pure diffusion Monte Carlo
+    # -----------------------------------------------------------------------------
+    pdE = 0.
+    pdE_error = 0.
+    pdR = 0.
+    pdR_error = 0.
+    for index, row in nxyz.iterrows():
+        nelectrons = row['nelectrons']
+        r = [row['x'], row['y'], row['z']]
+        for n in range(nelectrons):
+            pure_diffusion_E = []
+            pure_diffusion_ratio = []
+
+            for i in range(mc_trials):
+                x, y = Pure_diffusion_MC(a, r, nmc, dt, tau, eref)
+                pure_diffusion_E.append(x)
+                pure_diffusion_ratio.append(y)
+    
+            pdE += average(pure_diffusion_E)
+            pdE_error += error(pure_diffusion_E)
+            # Instead of adding up the ratio, update it with its average
+            pdR = (pdR + average(pure_diffusion_ratio))/2.
+            pdR_error += error(pure_diffusion_ratio)
+
+    # Store results
+    sPDMC = QMC(pdE, pdE_error, pdR, pdR_error)
+
+    return sPDMC
+
+def output_PDMC(sPDMC):
     # -----------------------------------------------------------------------------
     # Pure diffusion Monte Carlo
     section('Pure Diffusion MC')
     # -----------------------------------------------------------------------------
 
-    pure_diffusion_E = []
-    pure_diffusion_ratio = []
-
-    for i in range(mc_trials):
-        x, y = Pure_diffusion_MC(a, nmc, dt, tau, eref)
-        pure_diffusion_E.append(x)
-        pure_diffusion_ratio.append(y)
-    
-    # Print results
-    pd_E = average(pure_diffusion_E)
-    pd_sigma_E = error(pure_diffusion_E)
-    pd_ratio = average(pure_diffusion_ratio)
-    pd_sigma_ratio = error(pure_diffusion_ratio)
-    
-    print('E = ', pd_E, '+-', pd_sigma_E)
-    print('Ratio = ', pd_ratio, '+-', pd_sigma_ratio)
+    print('E = ', float_format(sPDMC.E), '+-', float_format(sPDMC.s))
+    print('Ratio = ', float_format(sPDMC.A), '+-', float_format(sPDMC.sA))
     
     # =============================================================================
     # Summary
     section('Summary')
     # =============================================================================
     methods = ['PDMC']
-    
-    energies = [pd_E]
-    
-    errors = [pd_sigma_E]
-    
-    ratios = [pd_ratio]
-    
-    sigma_ratios = [pd_sigma_ratio]
+    energies = [sPDMC.E]
+    errors = [sPDMC.s]
+    ratios = [sPDMC.A]
+    sigma_ratios = [sPDMC.sA]
     
     data = pd.DataFrame({'Method': methods, 'Energy, E': energies, 'Sigma_E': errors,
                          'Ratio, A': ratios, 'Sigma_A': sigma_ratios})
