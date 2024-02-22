@@ -2,6 +2,7 @@ import numpy as np
 import pandas as pd
 from tabulate import tabulate
 import logging
+import os
 
 def read_xyz(xyz_filename):
     # Read the title & charge
@@ -20,7 +21,8 @@ def read_xyz(xyz_filename):
 
     # Add a new column with the number of electrons of each atom;
     # open file with periodic table information
-    periodic_table = pd.read_csv('src/periodic-table.csv')
+    pt_file = os.path.dirname(__file__)+'/{}'.format('periodic-table.csv')
+    periodic_table = pd.read_csv(pt_file)
 
     # For each atom on the list, find it in the periodic table and add its
     # number of electrons in a new column

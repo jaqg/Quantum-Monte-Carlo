@@ -1,0 +1,16 @@
+# Type of calculation: VMC or PDMC
+PDMC
+# Amplitude of the wavefunction; exponent factor, a
+1.2
+# Number of steps for the MC calculation
+100
+# Number of MC calculations
+30
+#
+5.0
+# Value of dt, recommended: 1.0 (VMC) or 0.05 (PDMC)
+0.05
+# Value of tau for PDMC
+100.0
+# Value of reference energy, eref, for PDMC
+-0.5
