@@ -1,4 +1,4 @@
-from hamiltonian import potential_ee, potential_eN
+from hamiltonian import potential_ee, potential_eN, potential_NN
 
 import numpy as np
 
@@ -54,4 +54,22 @@ def test_potential_eN():
     assert potential_eN(r, R, Z) == -float("inf")
 
     print("potential_eN() -> ok")
+
+def test_potential_NN():
+    expected_output = 2./np.sqrt(3.)
+    R = (0., 0., 0., 1., 1., 1.)
+    Z = [1, 2]
+    assert potential_NN(R, Z) == expected_output
+
+    R = (1., 1., 1.)
+    Z = [2]
+    expected_output = Z[0] * potential_ee(R)
+    assert potential_NN(R, Z) == expected_output
+
+    expected_output = 0.
+    R = (0., 0., 0.)
+    Z = [1]
+    assert potential_NN(R, Z) == expected_output
+
+    print("potential_NN() -> ok")
 
