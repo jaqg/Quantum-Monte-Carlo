@@ -14,12 +14,10 @@ output_file='examples.log'
 molecule_name=($(grep '%chk=' $output_file | cut -d'=' -f2 | cut -d'.' -f1))
 
 # Extract the HF energies
-# energies=(1.00000 1.00000 1.00000 1.00000 1.000000)
 energies=($(grep 'SCF Done:' $output_file | cut -d'=' -f2 | cut -d'A' -f1))
 
 # Print the results
 separator
-# '          '
 printf '%s\t%s\n' "System" "Energy (Hartree)"
 separator
 for i in $(seq 0 1 $(( ${#molecule_name[@]} - 1)))
