@@ -64,7 +64,7 @@ def d_psi(llambda, a, r, R):
     n = int(len(r)/3)  # number of electrons
     m = int(len(R)/3)  # number of nucleus
         
-    res = 0.
+    suma = 0.
     for i in range(n):
         i_ind = 3*i
         ri = r[i_ind:i_ind+3]
@@ -89,7 +89,8 @@ def d_psi(llambda, a, r, R):
         if denominator == 0.:
             return float("inf")
         else:
-            res += -a * nominator/denominator * psi(a, ri, R)
+            suma += nominator/denominator
+    return -a * suma * psi(a, r, R)
 
 # Electron-electron potential
 def potential_ee(r):
