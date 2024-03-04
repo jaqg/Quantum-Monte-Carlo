@@ -1,6 +1,59 @@
-from hamiltonian import potential_ee, potential_eN, potential_NN
+from hamiltonian import phi, psi, potential_ee, potential_eN, potential_NN
 
 import numpy as np
+
+def all_debug():
+    test_phi()
+    test_psi()
+    test_potential_ee()
+    test_potential_eN()
+    test_potential_NN()
+
+def test_phi():
+    a = 1.2
+    r = (0., 0., 0.)
+    R = (0., 0., 0.)
+    expected_output = (a**3/np.pi)**0.5
+    assert phi(a, r, R) == expected_output
+
+    a = 1.2
+    r = (1., 1., 1.)
+    R = (1., 1., 1.)
+    expected_output = (a**3/np.pi)**0.5
+    assert phi(a, r, R) == expected_output
+
+    print("phi() -> ok")
+
+def test_psi():
+    a = 1.2
+    r = (0., 0., 0.)
+    R = (0., 0., 0.)
+    expected_output = phi(a, r, R)
+    assert psi(a, r, R) == expected_output
+
+    a = 1.2
+    r = (1., 2., 3.)
+    R = (0., 0., 0.)
+    expected_output = phi(a, r, R)
+    assert psi(a, r, R) == expected_output
+
+    a = 1.2
+    r = (1., 2., 3.)
+    R = (4., 5., 6.)
+    expected_output = phi(a, r, R)
+    assert psi(a, r, R) == expected_output
+
+    a = 1.2
+    r = (1., 2., 3., 4., 5., 6.)
+    R = (1., 2., 3., 4., 5., 6.)
+    expected_output = ( 
+                       phi(a, r[0:3], R[0:3]) + phi(a, r[0:3], R[3:6]) 
+                       ) * ( 
+                            phi(a, r[3:6], R[0:3]) + phi(a, r[3:6], R[3:6]) 
+                       )
+    assert psi(a, r, R) == expected_output
+
+    print("psi() -> ok")
 
 def test_potential_ee():
     expected_output = 1./np.sqrt(14.)

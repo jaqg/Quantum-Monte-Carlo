@@ -1,5 +1,96 @@
 import numpy as np
 
+# Slater determinants as AO basis
+def phi(a, r, R):
+    # 1s Slater type function phi_{ij}(r) = (a^3/pi)^{1/2} exp(-a |r_i - R_j|)
+    # a: Slater orbital exponent
+    # r: i-th electron coordinates vector
+    # R: j-th nucleus coordinates vector
+    # a -> float
+    # r -> (xi, yi, zi)
+    # R -> (xj, yj, zj)
+    d = (r[0] - R[0])**2 + (r[1] - R[1])**2 + (r[2] - R[2])**2
+    if d < 0:
+        return 0
+    else:
+        return (a**3/np.pi)**0.5 * np.exp(-a * np.sqrt(d))
+
+# Wavefunction
+def psi(a, r, R):
+    # Wavefunction as 1s Slater type functions centered in each atom
+    # a: Slater orbital exponent
+    # r: electron coordinates vector
+    # R: nucleus coordinates vector
+    # a -> float
+    # r -> (x1, y1, z1, x2, y2, z2, ..., xn, yn, zn)
+    # R -> (x1, y1, z1, x2, y2, z2, ..., xm, ym, zm)
+
+    n = int(len(r)/3)  # number of electrons
+    m = int(len(R)/3)  # number of nucleus
+
+    psi = 1.
+    for i in range(n):
+        ri = r[3*i:3*i+3]
+        suma = 0.
+        for j in range(m):
+            Rj = R[3*j:3*j+3]
+            suma += phi(a, ri, Rj)
+        psi *= suma
+    
+    return psi
+
+# First derivative of the wavefunction
+def d_psi(llambda, a, r, R):
+    # First derivative of the wavefunction: partial_{lambda} psi(r_i; R_j)
+    # for lambda = {x, y, z}
+    #
+    # lambda: coordinate which the derivative is taken
+    # a: Slater orbital exponent
+    # r: i-th electron coordinates vector
+    # R: nucleus coordinates vector
+    # lambda -> str
+    # a -> float
+    # r -> (xi, yi, zi)
+    # R -> (xj, yj, zj)
+    if llambda == 'x':
+        lambda_ind = 0
+    elif llambda == 'y':
+        lambda_ind = 1
+    elif llambda == 'z':
+        lambda_ind = 2
+    else:
+        raise ValueError('lambda must be x, y or z')
+
+    n = int(len(r)/3)  # number of electrons
+    m = int(len(R)/3)  # number of nucleus
+        
+    res = 0.
+    for i in range(n):
+        i_ind = 3*i
+        ri = r[i_ind:i_ind+3]
+        nominator = 0.
+        denominator = 0.
+        for j in range(m):
+            j_ind = 3*j
+            Rj = R[j_ind:j_ind+3]
+            rij2 = ((ri[0] - Rj[0])**2 +  # (xi - Xj)^2
+                    (ri[1] - Rj[1])**2 +  # (yi - Yj)^2
+                    (ri[2] - Rj[2])**2    # (zi - Zj)^2
+                   )
+            if rij2 < 0.:
+                return 0
+            else:
+                rij = np.sqrt(rij2)
+                if rij == 0.:
+                    return float("inf")
+                else:                    
+                    nominator += (ri[lambda_ind] - Rj[lambda_ind])/rij * phi(a, ri, Rj)
+            denominator += phi(a, ri, Rj)
+        if denominator == 0.:
+            return float("inf")
+        else:
+            res += -a * nominator/denominator * psi(a, ri, R)
+
 # Electron-electron potential
 def potential_ee(r):
     # r: electron coordinates vector
@@ -9,27 +100,36 @@ def potential_ee(r):
 
     # If there is one electron, the potential becomes 1/|r|
     if n == 1:
-        r_mod = np.sqrt(r[0]**2 + r[1]**2 + r[2]**2)
-        # if |r| = 0, 1/|r| -> inf
-        if r_mod == 0.:
-            return float("inf")
+        r2 = r[0]**2 + r[1]**2 + r[2]**2
+        if r2 < 0.:
+            return 0
         else:
-            return 1./r_mod
+            r_mod = np.sqrt(r2)
+            # if |r| = 0, 1/|r| -> inf
+            if r_mod == 0.:
+                return float("inf")
+            else:
+                return 1./r_mod
     # For more than 1 electron, compute the pair repulsion
     else:
         for i in range(n+1):
             i_ind = 3*i
+            ri = r[i_ind:i_ind+3]
             for j in range(i+1, n):
                 j_ind = 3*j
-                rij = np.sqrt(
-                        (r[i_ind] - r[j_ind])**2 +      # (xi - xj)^2
-                        (r[i_ind+1] - r[j_ind+1])**2 +  # (yi - yj)^2
-                        (r[i_ind+2] - r[j_ind+2])**2    # (zi - zj)^2
-                        )
-                if rij == 0.:
-                    return float("inf")
-                else:                    
-                    pot += 1./rij
+                rj = r[j_ind:j_ind+3]
+                rij2 = ((ri[0] - rj[0])**2 +  # (xi - Xj)^2
+                        (ri[1] - rj[1])**2 +  # (yi - Yj)^2
+                        (ri[2] - rj[2])**2    # (zi - Zj)^2
+                       )
+                if rij2 < 0.:
+                    return 0
+                else:
+                    rij = np.sqrt(rij2)
+                    if rij == 0.:
+                        return float("inf")
+                    else:                    
+                        pot += 1./rij
         return pot
 
 # Electron-nucleus potential
@@ -51,17 +151,22 @@ def potential_eN(r, R, Z):
     pot = 0.
     for i in range(n):
         i_ind = 3*i
+        ri = r[i_ind:i_ind+3]
         for j in range(m):
             j_ind = 3*j
-            rij = np.sqrt(
-                    (r[i_ind]   - R[j_ind])**2 +    # (xi - xj)^2
-                    (r[i_ind+1] - R[j_ind+1])**2 +  # (yi - yj)^2
-                    (r[i_ind+2] - R[j_ind+2])**2    # (zi - zj)^2
-                    )
-            if rij == 0.:
-                return -float("inf")
-            else:                    
-                pot += float(Z[j])/rij
+            Rj = R[j_ind:j_ind+3]
+            rij2 = ((ri[0] - Rj[0])**2 +  # (xi - Xj)^2
+                    (ri[1] - Rj[1])**2 +  # (yi - Yj)^2
+                    (ri[2] - Rj[2])**2    # (zi - Zj)^2
+                   )
+            if rij2 < 0.:
+                return 0
+            else:
+                rij = np.sqrt(rij2)
+                if rij == 0.:
+                    return -float("inf")
+                else:                    
+                    pot += float(Z[j])/rij
     return -pot
 
 # Nucleus-nucleus potential
@@ -82,27 +187,36 @@ def potential_NN(R, Z):
 
     # If there is one nucleus, the potential becomes Z/|R|
     if m == 1:
-        R_mod = np.sqrt(R[0]**2 + R[1]**2 + R[2]**2)
-        # if |R| = 0, take potential = 0.
-        if R_mod == 0.:
-            return 0.
+        R2 = R[0]**2 + R[1]**2 + R[2]**2
+        if R2 < 0.:
+            return 0
         else:
-            return Z[0]/R_mod
+            R_mod = np.sqrt(R2)
+            # if |R| = 0, take potential = 0.
+            if R_mod == 0.:
+                return 0.
+            else:
+                return Z[0]/R_mod
     # For more than 1 nucleus, compute the pair repulsion
     else:
         for i in range(m+1):
             i_ind = 3*i
+            Ri = R[i_ind:i_ind+3]
             for j in range(i+1, m):
                 j_ind = 3*j
-                Rij = np.sqrt(
-                        (R[i_ind] - R[j_ind])**2 +      # (xi - xj)^2
-                        (R[i_ind+1] - R[j_ind+1])**2 +  # (yi - yj)^2
-                        (R[i_ind+2] - R[j_ind+2])**2    # (zi - zj)^2
-                        )
-                if Rij == 0.:
-                    return float("inf")
-                else:                    
-                    pot += Z[i] * Z[j]/Rij
+                Rj = R[j_ind:j_ind+3]
+                Rij2 = ((Ri[0] - Rj[0])**2 +  # (xi - Xj)^2
+                        (Ri[1] - Rj[1])**2 +  # (yi - Yj)^2
+                        (Ri[2] - Rj[2])**2    # (zi - Zj)^2
+                       )
+                if Rij2 < 0.:
+                    return 0
+                else:
+                    Rij = np.sqrt(Rij2)
+                    if Rij == 0.:
+                        return float("inf")
+                    else:                    
+                        pot += Z[i] * Z[j]/Rij
         return pot
 
 # Total potential energy
@@ -113,4 +227,3 @@ def potential(r, R, Z):
 def kinetic_N():
     # Born-Oppenheimer approximation is considered
     return 0.
-
