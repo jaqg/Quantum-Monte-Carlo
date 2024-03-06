@@ -14,12 +14,14 @@ def all_debug():
     test_potential_NN()
 
 def test_phi():
+    # Case when |rij| = 0
     a = 1.2
     r = (0., 0., 0.)
     R = (0., 0., 0.)
     expected_output = (a**3/np.pi)**0.5
     assert phi(a, r, R) == expected_output
 
+    # Case when |rij| = 0
     a = 1.2
     r = (1., 1., 1.)
     R = (1., 1., 1.)
@@ -29,30 +31,21 @@ def test_phi():
     print("phi() -> ok")
 
 def test_dphi():
+    # Case when |rij| = 0
     a = 1.2
     r = (0., 0., 0.)
     R = (0., 0., 0.)
     expected_output = -float("inf")
     assert d_phi('x', a, r, R) == expected_output
 
-    a = 1.2
-    r = (0., 2., 2.)
-    R = (0., 0., 0.)
-    expected_output = 0.
-    assert d_phi('x', a, r, R) == expected_output
-
+    # Case when Cij = 0, |rij| /= 0
     a = 1.2
     r = (1., 2., 2.)
     R = (1., 0., 0.)
     expected_output = 0.
     assert d_phi('x', a, r, R) == expected_output
 
-    a = 1.2
-    r = (1., 0., 0.)
-    R = (1., 0., 0.)
-    expected_output = -float("inf")
-    assert d_phi('x', a, r, R) == expected_output
-
+    # Case when Cij = 1 <- xi - Xj = 1 and |rij| = 1
     a = 1.2
     r = (2., 0., 0.)
     R = (1., 0., 0.)
@@ -126,27 +119,31 @@ def test_d2phi():
     print("d2_phi() -> ok")
 
 def test_psi():
+    # Case when |rij| = 0
     a = 1.2
     r = (0., 0., 0.)
     R = (0., 0., 0.)
     expected_output = phi(a, r, R)
     assert psi(a, r, R) == expected_output
 
+    # Case for 1 electron and 1 atom and R = 0
     a = 1.2
     r = (1., 2., 3.)
     R = (0., 0., 0.)
     expected_output = phi(a, r, R)
     assert psi(a, r, R) == expected_output
 
+    # Case for 1 electron and 1 atom and R /= 0
     a = 1.2
     r = (1., 2., 3.)
     R = (4., 5., 6.)
     expected_output = phi(a, r, R)
     assert psi(a, r, R) == expected_output
 
+    # Case for 2 electron and 2 atom
     a = 1.2
     r = (1., 2., 3., 4., 5., 6.)
-    R = (1., 2., 3., 4., 5., 6.)
+    R = (7., 8., 9., 10., 11., 12.)
     expected_output = ( 
                        phi(a, r[0:3], R[0:3]) + phi(a, r[0:3], R[3:6]) 
                        ) * ( 
@@ -157,19 +154,34 @@ def test_psi():
     print("psi() -> ok")
 
 def test_dpsi():
+    # Case when |rij| = 0
     a = 1.2
     r = (0., 0., 0.)
     R = (0., 0., 0.)
     expected_output = float("inf")
     assert d_psi('x', a, r, R) == expected_output
 
+    # Case when |rij| = 0 but ri /= 0 and Rj /= 0
     r = (1., 1., 1.)
     R = (1., 1., 1.)
     expected_output = float("inf")
     assert d_psi('x', a, r, R) == expected_output
 
+    # Case when Cij = 0, |rij| /= 0 (1 electron)
     r = (0., 2., 2.)
     R = (0., 1., 1.)
+    expected_output = 0.
+    assert d_psi('x', a, r, R) == expected_output
+
+    # Case for 1 electron, check with derivative of phi
+    r = (1., 2., 3.)
+    R = (4., 5., 6.)
+    expected_output = d_phi('x', a, r, R)
+    assert d_psi('x', a, r, R) == expected_output
+
+    # Case when Cij = 0, |rij| /= 0 (multiple electrons)
+    r = (0., 2., 2., 0., 2., 2., 0., 2., 2., 0., 2., 2.)
+    R = (0., 1., 1., 0., 1., 1., 0., 1., 1., 0., 1., 1.)
     expected_output = 0.
     assert d_psi('x', a, r, R) == expected_output
 
@@ -190,42 +202,45 @@ def test_dpsi():
     print("d_psi() -> ok")
 
 def test_d2psi():
+    # Case when |rij| = 0 -> Dij = inf
     a = 1.2
     r = (0., 0., 0.)
     R = (0., 0., 0.)
     expected_output = float("inf")
     assert d2_psi('x', a, r, R) == expected_output
 
+    # Case when |rij| = 0 -> Dij = inf
     r = (1., 1., 1.)
     R = (1., 1., 1.)
     expected_output = float("inf")
     assert d2_psi('x', a, r, R) == expected_output
 
-    r = (0., 2., 2.)
-    R = (0., 1., 1.)
-    rR = np.sqrt((r[0]-R[0])**2 + (r[1]-R[1])**2 + (r[2]-R[2])**2)
-    expected_output = -a/rR * phi(a, r, R)
+    # Case when Cij = 0 -> Dij = 1/rij but |rij| /= 0
+    r = (0., 1., 1.)
+    R = (0., 0., 0.)
+    rij = np.sqrt((r[0] - R[0])**2 + (r[1] - R[1])**2 + (r[2] - R[2])**2)
+    expected_output = -a * 1./rij * psi(a, r, R)
     assert d2_psi('x', a, r, R) == expected_output
 
-    r = (1., 2., 2.)
-    R = (1., 1., 1.)
-    rR = np.sqrt((r[0]-R[0])**2 + (r[1]-R[1])**2 + (r[2]-R[2])**2)
-    expected_output = -a/rR * phi(a, r, R)
+    # Case when Dij = 1 <- Cij = 0, |rij| = 1
+    r = (0., 1., 0.)
+    R = (0., 0., 0.)
+    expected_output = -a * psi(a, r, R)
     assert d2_psi('x', a, r, R) == expected_output
 
-    # # Test with numerical derivative
-    # x = np.linspace(-5.,5,100)
-    # dx = x[1]-x[0]
-    # y = []
-    # yp = []
-    # for i in range(len(x)):
-    #     r = (x[i], 1., 0.)
-    #     y.append(psi(a, r, R))
-    #     yp.append(d_psi('x', a, r, R))
-    # # compute numerically the derivative as the gradient
-    # num_yp = np.gradient(y, dx)
-    # # compare the values with a relative tolerance of 0.1 * num_yp (10%)
-    # assert np.allclose(yp[1:-1], num_yp[1:-1], rtol=1e-01)
+    # Test with numerical derivative
+    x = np.linspace(-5.,5,100)
+    dx = x[1]-x[0]
+    y = []
+    yp = []
+    for i in range(len(x)):
+        r = (x[i], 1., 0.)
+        y.append(psi(a, r, R))
+        yp.append(d_psi('x', a, r, R))
+    # compute numerically the derivative as the gradient
+    num_yp = np.gradient(y, dx)
+    # compare the values with a relative tolerance of 0.1 * num_yp (10%)
+    assert np.allclose(yp[1:-1], num_yp[1:-1], rtol=1e-01)
 
     print("d2_psi() -> ok")
 
@@ -249,6 +264,7 @@ def test_potential_ee():
     for r in [(1., 2., 3., 4., 5., 6., 7., 8., 9.)]:
           assert potential_ee(r) == expected_output
 
+    # Case when |r| = 0
     r = (0., 0., 0.)
     assert potential_ee(r) == float("inf")
 
@@ -277,6 +293,7 @@ def test_potential_eN():
     Z = [1, 2]
     assert potential_eN(r, R, Z) == expected_output
 
+    # Case when |r - R| = 0
     r = (0., 0., 0.)
     assert potential_eN(r, R, Z) == -float("inf")
 
@@ -293,6 +310,7 @@ def test_potential_NN():
     expected_output = Z[0] * potential_ee(R)
     assert potential_NN(R, Z) == expected_output
 
+    # Case when |R| = 0
     expected_output = 0.
     R = (0., 0., 0.)
     Z = [1]

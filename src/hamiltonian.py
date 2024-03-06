@@ -160,7 +160,8 @@ def d_psi(llambda, a, r, R):
                 if rij == 0.:
                     return float("inf")
                 else:                    
-                    nominator += (ri[lambda_ind] - Rj[lambda_ind])/rij * phi(a, ri, Rj)
+                    Cij = (r[lambda_ind] - R[lambda_ind])/rij
+                    nominator += Cij * phi(a, ri, Rj)
             denominator += phi(a, ri, Rj)
         if denominator == 0.:
             return float("inf")
