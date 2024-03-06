@@ -92,6 +92,60 @@ def d_psi(llambda, a, r, R):
             suma += nominator/denominator
     return -a * suma * psi(a, r, R)
 
+# Second derivative of the wavefunction
+def d2_psi(llambda, a, r, R):
+    # Second derivative of the wavefunction: partial_{lambda}^2 psi(r_i; R_j)
+    # for lambda = {x, y, z}
+    #
+    # lambda: coordinate which the derivative is taken
+    # a: Slater orbital exponent
+    # r: i-th electron coordinates vector
+    # R: nucleus coordinates vector
+    # lambda -> str
+    # a -> float
+    # r -> (xi, yi, zi)
+    # R -> (xj, yj, zj)
+    if llambda == 'x':
+        lambda_ind = 0
+    elif llambda == 'y':
+        lambda_ind = 1
+    elif llambda == 'z':
+        lambda_ind = 2
+    else:
+        raise ValueError('lambda must be x, y or z')
+
+    n = int(len(r)/3)  # number of electrons
+    m = int(len(R)/3)  # number of nucleus
+        
+    suma = 0.
+    for i in range(n):
+        i_ind = 3*i
+        ri = r[i_ind:i_ind+3]
+        nominator = 0.
+        denominator = 0.
+        for j in range(m):
+            j_ind = 3*j
+            Rj = R[j_ind:j_ind+3]
+            rij2 = ((ri[0] - Rj[0])**2 +  # (xi - Xj)^2
+                    (ri[1] - Rj[1])**2 +  # (yi - Yj)^2
+                    (ri[2] - Rj[2])**2    # (zi - Zj)^2
+                   )
+            if rij2 < 0.:
+                return 0
+            else:
+                rij = np.sqrt(rij2)
+                if rij == 0.:
+                    return float("inf")
+                else:                    
+                    Dij = 1./rij - ( (a * rij + 1.) * (ri[lambda_ind] - Rj[lambda_ind])**2 )/(rij**3)
+                    nominator += Dij * phi(a, ri, Rj)
+            denominator += phi(a, ri, Rj)
+        if denominator == 0.:
+            return float("inf")
+        else:
+            suma += nominator/denominator
+    return -a * suma * psi(a, r, R)
+
 # Electron-electron potential
 def potential_ee(r):
     # r: electron coordinates vector

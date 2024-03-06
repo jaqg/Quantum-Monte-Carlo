@@ -1,0 +1,1325 @@
+\graphicspath{{./figures/}}
+
+% ------
+\section{Definitions}
+% ------
+The molecular orbitals (MO's), our wavefunctions, $\psi$, are formed as Linear
+Combinations of atomic orbitals (AO's).
+The AO basis functions used are the normalized $1s$ \textit{Slater type function} 
+centered at $\mat{R}$
+\begin{equation}
+    \phi \left( \mat{r} - \mat{R} \right) \equiv
+    \phi \left( \mat{r} \right) =
+    \left( \frac{\alpha^3}{\pi} \right)^{1 /2}
+    e^{-\alpha \left| \mat{r} - \mat{R} \right|}
+    ,
+\end{equation}
+where $\alpha$ is the \textit{Slater orbital exponent} and 
+$\left| \mat{r} - \mat{R} \right|$ is the distance between a point in space,
+$ \mat{r}$ and $ \mat{R}$ 
+\begin{equation} \label{eq:definition-mod-rR}
+    \left| \mat{r} - \mat{R} \right|
+    =
+    \sqrt{\left( x - X \right)^{2} + \left( y - Y \right)^{2} + \left( z - Z \right)^{2}}
+    ,
+\end{equation}
+where lower case letters reffer to the cartesian coordinates of 
+$ \mat{r} = \left( x\ y\ z \right)$ and upper case to 
+$ \mat{R} = \left( X\ Y\ Z \right)$.
+
+To simplify the notation, the value of the orbital in the $i$-th point in space,
+$\mat{r}_i = \left( x_i\ y_i\ z_i \right)$, centered on the $j$-th atom, at
+$\mat{R}_j = \left( X_j\ Y_j\ Z_j \right)$, is denoted as 
+\begin{equation}
+    \phi_{ij} \equiv
+    \phi \left( \mat{r}_i - \mat{R}_j \right) =
+    \left( \frac{\alpha^3}{\pi} \right)^{1 /2}
+    e^{-\alpha \left| \mat{r}_i - \mat{R}_j \right|}
+    \equiv
+    \left( \frac{\alpha^3}{\pi} \right)^{1 /2}
+    e^{-\alpha \left| \mat{r}_{ij} \right|}
+    ,
+\end{equation}
+where it is important to note that the modulus $\left| \mat{r}_{i} - \mat{R}_{j} \right|$
+is simply written as the two-indexed $\left| \mat{r}_{ij} \right|$.
+
+Therefore, our MO's are constructed in the AO's basis functions $\left\{ \phi_{\mu} \right\}$
+as the product of the summed contributions of all the AO's at any given point
+in space. More specifically, as the product of the summed contributions of each
+orbital, centered at each atom position, for the position of each electron.
+Then, the wavefunction for $n$ electrons and $m$ atoms (nucleus) is given by 
+\begin{equation} \label{eq:definition-psi}
+    \psi \left( \mat{r} \right) =
+    \prod_{i=1}^{n} \left( \sum_{I=1}^{m} \phi_{iI} \right)
+    ,
+\end{equation}
+where, to keep the notation simple, the electrons are indexed with lower case
+letters and the nucleus with upper case.
+For $n$ electrons and $m$ nucleus, $\mat{r}$ has $3n$ components and
+$\mat{R}$ has $3m$ components.
+
+The drif vector is given by 
+\begin{equation} \label{eq:definition-drift-vector}
+    \frac{
+        \nabla \psi \left( \mat{r} \right)
+    }{
+        \psi \left( \mat{r} \right)
+    }
+    ,
+\end{equation}
+where the gradient reads
+\begin{equation} \label{eq:definition-gradient}
+    \nabla
+    =
+    \partial_x + \partial_y + \partial_z
+    .
+\end{equation}
+
+The local kinetic energy is defined as 
+\begin{equation} \label{eq:definition-kinetic-energy}
+    T_{\mathrm{L}} \left( \mat{r} \right)
+    =
+    - \frac{1}{2} \frac{\laplacian \psi \left( \mat{r} \right)}{\psi \left( \mat{r} \right)}
+    ,
+\end{equation}
+where the laplacian reads
+\begin{equation} \label{eq:definition-laplacian}
+    \laplacian 
+    =
+    \partial_x^{2} + \partial_y^{2} + \partial_z^{2}
+    .
+\end{equation}
+
+To compute the drif vector and kinetic energy, the gradient and laplacian of
+the wavefunction over the electron positions, $ \mat{r}$, are needed.
+Firstly, to easy the upcoming development, the first and second partial 
+derivatives of the basis functions are calculated.
+
+% ------
+\section{Partial derivatives of the AO's}
+% ------
+The first partial derivative of the AO
+$\phi \left( \mat{r}_i - \mat{R}_I \right) \equiv \phi_{iI}$
+over the $x$ component of the $i$-th
+electron, $x_i$, is given by 
+\begin{equation}
+    \frac{\partial}{\partial x_i} \phi_{iI}
+    \equiv
+    \partial_{x_i} \phi_{iI}
+    .
+\end{equation}
+
+By definition
+\begin{equation}
+    \partial_{x_{i}} f\left( \mat{r}_i \right)
+    =
+    \partial_{\mat{r}_{i}} f\left( \mat{r}_i \right) \partial_{x_{i}} \mat{r}_{i}
+    ,
+\end{equation}
+then 
+\begin{equation} \label{eq:fd-phi-1}
+    \partial_{x_{i}} \phi_{iI}
+    =
+    \partial_{\left| \mat{r}_{iI} \right|} \phi_{iI} \partial_{x_{i}} \left| \mat{r}_{iI} \right|
+    ,
+\end{equation}
+where the first partial derivative reads 
+\begin{equation}
+    \partial_{\left| \mat{r}_{iI} \right|} \phi_{iI}
+    =
+    \left( \frac{\alpha^3}{\pi} \right)^{1 /2}
+    \partial_{\left| \mat{r}_{iI} \right|} 
+    e^{-\alpha \left| \mat{r}_{iI} \right|}
+    =
+    -\alpha
+    \left( \frac{\alpha^3}{\pi} \right)^{1 /2}
+    e^{-\alpha \left| \mat{r}_{iI} \right|}
+    =
+    -\alpha \phi_{iI}
+    ,
+\end{equation}
+and the second one reads 
+\begin{align} \label{eq:partial-xi-riI}
+    \notag
+    \partial_{x_{i}} \left| \mat{r}_{iI} \right|
+    &=
+    \partial_{x_{i}} \left[ \left( x_i - X_I \right)^{2} + \left( y_i - Y_I \right)^{2} + \left( z_i - Z_I \right)^{2}  \right]^{1 /2}
+    \\
+    \notag
+    &=
+    \frac{1}{2} \partial_{x_{i}} \left[ \left( x_i - X_I \right)^{2} + \left( y_i - Y_I \right)^{2} + \left( z_i - Z_I \right)^{2}  \right] \left[ \left( x_i - X_I \right)^{2} + \left( y_i - Y_I \right)^{2} + \left( z_i - Z_I \right)^{2}  \right]^{-1 /2}
+    \\
+    \notag
+    &=
+    \frac{1}{2} 2 \partial_{x_{i}} \left( x_i - X_I \right) \left( x_i - X_I \right) \frac{1}{\left| \mat{r}_{iI} \right|}
+    \\
+    &=
+    \frac{x_i - X_I}{\left| \mat{r}_{iI} \right|}
+    .
+\end{align}
+
+Then, in \cref{eq:fd-phi-1}
+\begin{equation} \label{eq:partial-phi-xi}
+    \partial_{x_{i}} \phi_{iI}
+    =
+    -\alpha
+    \frac{x_i - X_I}{\left| \mat{r}_{iI} \right|}
+    \phi_{iI} 
+    .
+\end{equation}
+For the $y_i$ and $z_i$ components, the analogous result is obtained.
+Therefore, the first partial derivative over the 
+$\lambda_i = \left\{ x_i, y_i, z_i \right\}$
+component is given by
+\begin{equation} \label{eq:partial-phi-lambda}
+    \therefore
+    \partial_{\lambda_{i}} \phi_{iI}
+    =
+    -\alpha
+    C_{\lambda,iI}
+    \phi_{iI}
+    ,
+\end{equation}
+where 
+\begin{equation} \label{eq:definition-CiI}
+    C_{\lambda,iI} =
+    \frac{\lambda_i - \Lambda_I}{\left| \mat{r}_{iI} \right|}
+    .
+\end{equation}
+
+The second partial derivative is obtained as
+\begin{equation} \label{eq:der2-xi-phi-1}
+    \partial_{x_{i}}^{2} \phi_{iI}
+    =
+    -\alpha
+    \partial_{x_{i}}
+    \left( 
+        C_{x,iI}
+        \phi_{iI} 
+    \right)
+    .
+\end{equation}
+
+Applying the product rule
+\begin{equation} \label{eq:der2-xi-phi-2}
+    \partial_{x_i}
+    \left( 
+        C_{x,iI}
+        \phi_{iI} 
+    \right)
+    =
+    \phi_{iI}
+    \partial_{x_i}
+    C_{x,iI}
+    +
+    C_{x,iI}
+    \partial_{x_i}
+    \phi_{iI}
+    ,
+\end{equation}
+where, by the quotient rule
+\begin{equation}
+    \partial_{x_i}
+    C_{x,iI}
+    =
+    \partial_{x_i}
+    \left( 
+        \frac{x_i - X_I}{\left| \mat{r}_{iI} \right|}
+    \right)
+    =
+    \frac{
+        \left| \mat{r}_{iI} \right|
+        \partial_{x_i}
+        \left( x_i - X_I \right)
+        %
+        -
+        %
+        \left( x_i - X_I \right)
+        \partial_{x_i}
+        \left| \mat{r}_{iI} \right|
+    }{
+        \left| \mat{r}_{iI} \right|^{2}
+    }
+    ,
+\end{equation}
+as $\partial_{x_i} \left( x_i - X_I \right) = 1$ and recalling \cref{eq:partial-xi-riI}
+\begin{equation}
+    \partial_{x_i}
+    C_{x,iI}
+    =
+    \frac{
+        \left| \mat{r}_{iI} \right|
+        %
+        -
+        %
+        \left( x_i - X_I \right)
+        \frac{x_i - X_I}{\left| \mat{r}_{iI} \right|}
+    }{
+        \left| \mat{r}_{iI} \right|^{2}
+    }
+    =
+    \frac{
+        1
+    }{
+        \left| \mat{r}_{iI} \right|
+    }
+    -
+    \frac{
+        \left( x_i - X_I \right)^{2}
+    }{
+        \left| \mat{r}_{iI} \right|^{3}
+    }
+    =
+    \frac{
+        1 - C_{x,iI}^{2}
+    }{
+        \left| \mat{r}_{iI} \right|
+    }
+    ,
+\end{equation}
+
+In \cref{eq:der2-xi-phi-2}
+\begin{equation} \label{eq:partial-xiXI-riI-1}
+    \partial_{x_i}
+    \left(
+        C_{x,iI}
+        \phi_{iI}
+    \right)
+    =
+    \frac{
+        1 - C_{x,iI}^{2}
+    }{
+        \left| \mat{r}_{iI} \right|
+    }
+    \phi_{iI}
+    +
+    C_{x,iI}
+    \partial_{x_i}
+    \phi_{iI}
+    ,
+\end{equation}
+and in \cref{eq:der2-xi-phi-1} 
+\begin{equation}
+    \partial_{x_{i}}^{2} \phi_{iI}
+    =
+    -\alpha
+    \left( 
+        \frac{
+            1 - C_{x,iI}^{2}
+        }{
+            \left| \mat{r}_{iI} \right|
+        }
+        \phi_{iI}
+        +
+        C_{x,iI}
+        \partial_{x_i}
+        \phi_{iI}
+    \right)
+    ,
+\end{equation}
+inserting the $-\alpha$ factor 
+\begin{equation} \label{eq:der2-xi-phi-3}
+    \partial_{x_{i}}^{2} \phi_{iI}
+    =
+    -
+    \frac{
+        \alpha
+    }{
+        \left| \mat{r}_{iI} \right|
+    }
+    \phi_{iI}
+    -
+    \left( 
+        -\alpha
+        \frac{
+            C_{x,iI}^{2}
+        }{
+            \left| \mat{r}_{iI} \right|
+        }
+        \phi_{iI}
+    \right)
+    - \alpha
+    C_{x,iI}
+    \partial_{x_i}
+    \phi_{iI}
+    ,
+\end{equation}
+and recalling \cref{eq:partial-phi-lambda}, the second term reads
+\begin{equation}
+    -\alpha
+    \frac{
+        C_{x,iI}^{2}
+    }{
+        \left| \mat{r}_{iI} \right|
+    }
+    \phi_{iI}
+    =
+    \frac{
+        C_{x,iI}
+    }{
+        \left| \mat{r}_{iI} \right|
+    }
+    \left(
+        - \alpha
+        C_{x,iI}
+        \phi_{iI}
+    \right)
+    =
+    \frac{
+        C_{x,iI}
+    }{
+        \left| \mat{r}_{iI} \right|
+    }
+    \partial_{x_{i}} \phi_{iI}
+    .
+\end{equation}
+
+In \cref{eq:der2-xi-phi-3}
+\begin{equation}
+    \partial_{x_{i}}^{2} \phi_{iI}
+    =
+    -
+    \frac{
+        \alpha
+    }{
+        \left| \mat{r}_{iI} \right|
+    }
+    \phi_{iI}
+    -
+    \frac{
+        C_{x,iI}
+    }{
+        \left| \mat{r}_{iI} \right|
+    }
+    \partial_{x_{i}} \phi_{iI}
+    - \alpha
+    C_{x,iI}
+    \partial_{x_i}
+    \phi_{iI}
+    ,
+\end{equation}
+and taking $\partial_{x_i} \phi_{iI}$ as common factor
+\begin{equation}
+    \partial_{x_{i}}^{2} \phi_{iI}
+    =
+    -
+    \frac{
+        \alpha
+    }{
+        \left| \mat{r}_{iI} \right|
+    }
+    \phi_{iI}
+    -
+    \left( 
+        \frac{
+            C_{x,iI}
+        }{
+            \left| \mat{r}_{iI} \right|
+        }
+        +
+        \alpha
+        C_{x,iI}
+    \right)
+    \partial_{x_i}
+    \phi_{iI}
+    ,
+\end{equation}
+or
+\begin{equation}
+    \partial_{x_{i}}^{2} \phi_{iI}
+    =
+    -
+    \frac{
+        \alpha
+    }{
+        \left| \mat{r}_{iI} \right|
+    }
+    \phi_{iI}
+    -
+    \frac{
+        C_{x,iI}
+        \left( 
+            1 + \alpha \left| \mat{r}_{iI} \right|
+        \right)
+    }{
+        \left| \mat{r}_{iI} \right|
+    }
+    \partial_{x_i}
+    \phi_{iI}
+    .
+\end{equation}
+
+The second partial derivative over the 
+$\lambda_i = \left\{ x_i, y_i, z_i \right\}$
+component can be expressed in terms of the first partial derivative as
+\begin{equation} \label{eq:partial-2-phi-lambda-first-der}
+    \therefore
+    \partial_{\lambda_{i}}^{2} \phi_{iI}
+    =
+    -
+    \frac{
+        \alpha
+    }{
+        \left| \mat{r}_{iI} \right|
+    }
+    \phi_{iI}
+    -
+    \frac{
+        C_{\lambda,iI}
+        \left( 
+            1 + \alpha \left| \mat{r}_{iI} \right|
+        \right)
+    }{
+        \left| \mat{r}_{iI} \right|
+    }
+    \partial_{\lambda_i}
+    \phi_{iI}
+    ,
+\end{equation}
+which can be usefull for testing.
+
+Now, recalling \cref{eq:partial-phi-lambda}
+\begin{equation}
+    \partial_{x_{i}}^{2} \phi_{iI}
+    =
+    -
+    \frac{
+        \alpha
+    }{
+        \left| \mat{r}_{iI} \right|
+    }
+    \phi_{iI}
+    -
+    \frac{
+        C_{x,iI}
+        \left( 
+            1 + \alpha \left| \mat{r}_{iI} \right|
+        \right)
+    }{
+        \left| \mat{r}_{iI} \right|
+    }
+    \left( 
+        -\alpha
+        C_{\lambda,iI}
+        \phi_{iI}
+    \right)
+    ,
+\end{equation}
+and taking $-\alpha \phi_{iI}$ as common factor
+\begin{equation}
+    \partial_{x_{i}}^{2} \phi_{iI}
+    =
+    - \alpha
+    \left( 
+        \frac{
+            1
+        }{
+            \left| \mat{r}_{iI} \right|
+        }
+        -
+        \frac{
+            C_{x,iI}^{2}
+            \left( 
+                1 + \alpha \left| \mat{r}_{iI} \right|
+            \right)
+        }{
+            \left| \mat{r}_{iI} \right|
+        }
+    \right)
+    \phi_{iI}
+    .
+\end{equation}
+the second partial derivative over the 
+$\lambda_i = \left\{ x_i, y_i, z_i \right\}$
+component is given by
+\begin{equation} \label{eq:partial-2-phi-lambda}
+    \therefore
+    \partial_{\lambda_{i}}^{2} \phi_{iI}
+    =
+    -\alpha
+    D_{\lambda,iI}
+    \phi_{iI}
+    ,
+\end{equation}
+where 
+\begin{equation} \label{eq:coeficiente-DiI-CiI}
+    D_{\lambda,iI}
+    =
+    \frac{
+        1
+    }{
+        \left| \mat{r}_{iI} \right|
+    }
+    -
+    \frac{
+        C_{\lambda,iI}^{2}
+        \left( 
+            1 + \alpha \left| \mat{r}_{iI} \right|
+        \right)
+    }{
+        \left| \mat{r}_{iI} \right|
+    }
+    ,
+\end{equation}
+or, recalling the definition of $C_{\lambda,iI}$ in \cref{eq:definition-CiI}
+\begin{equation} \label{eq:coeficiente-DiI}
+    D_{\lambda,iI} =
+    \frac{1}{\left| \mat{r}_{iI} \right|}
+    -
+    \frac{
+        \left( \lambda_i - \Lambda_I \right)^{2}
+        \left(  
+            1 + \alpha \left| \mat{r}_{iI} \right|
+        \right)
+    }{
+        \left| \mat{r}_{iI} \right|^{3}
+    }
+    .
+\end{equation}
+
+% ------
+\section{Partial derivatives of the wavefunction}
+% ------
+The first derivative of the wavefunction
+$\psi \left( \mat{r} \right) \equiv \psi$
+over the $x$ component of the $i$-th
+electron, $x_i$, is given by 
+\begin{equation}
+    \partial_{x_i} \psi
+    =
+    \partial_{x_i} \prod_{i=1}^{n} \left( \sum_{I=1}^{m} \phi_{iI} \right)
+    .
+\end{equation}
+
+As the partial derivative of all the $j \not= i$ components over $i$ is null 
+\begin{equation}
+    \partial_{x_j} \phi_{jI} = 0\quad \forall j \not= i\ \mathrm{and}\ \forall I,
+\end{equation}
+only the $j\not= i$ components that are not differentiated survive. Then 
+\begin{equation} \label{eq:fd-psi-1}
+    \partial_{x_i} \psi 
+    =
+    \partial_{x_i} \prod_{i=1}^{n} \left( \sum_{I=1}^{m} \phi_{iI} \right)
+    =
+    \prod_{j\not=i}^{n} \left( \sum_{I=1}^{m} \phi_{jI} \right)
+    \partial_{x_i} \left( \sum_{I=1}^{m} \phi_{iI} \right)
+    =
+    \prod_{j\not=i}^{n} \left( \sum_{I=1}^{m} \phi_{jI} \right)
+    \sum_{I=1}^{m} \partial_{x_i} \phi_{iI}
+    .
+\end{equation}
+
+Since both in the drift vector and the kinetic energy 
+(\cref{eq:definition-drift-vector,eq:definition-kinetic-energy}) the gradient and the laplacian
+are divided by $\psi$, it is convinient to express those in terms of
+$\psi$.
+
+Given the definition of $\psi$ in \cref{eq:definition-psi}, the product can be
+separated as
+\begin{equation}
+    \psi =
+    \left( \sum_{I=1}^{m} \phi_{iI} \right)
+    \prod_{j\not=i}^{n} \left( \sum_{I=1}^{m} \phi_{jI} \right)
+    ,
+\end{equation}
+which implies that
+\begin{equation}
+    \prod_{j\not=i}^{n} \left( \sum_{I=1}^{m} \phi_{jI} \right)
+    =
+    \frac{\psi}{
+        \sum_{I=1}^{m} \phi_{iI}
+    }
+    .
+\end{equation}
+
+This way, \cref{eq:fd-psi-1} can be rewritten in terms of $\psi$ and 
+$\partial_{x_i} \phi_{iI}$ as
+\begin{equation} \label{eq:fd-psi-2}
+    \partial_{x_i} \psi 
+    =
+    \frac{
+        \sum_{I=1}^{m} \partial_{x_i} \phi_{iI}
+    }{
+        \sum_{I=1}^{m} \phi_{iI}
+    }
+    \psi
+    .
+\end{equation}
+
+Recalling \cref{eq:partial-phi-lambda} in \cref{eq:fd-psi-2}
+\begin{equation} \label{eq:derivada-psi-xi}
+    \partial_{x_i} \psi 
+    =
+    -\alpha
+    \frac{
+        \sum_{I=1}^{m} 
+        C_{x,iI}
+        \phi_{iI} 
+    }{
+        \sum_{I=1}^{m} \phi_{iI}
+    }
+    \psi
+    .
+\end{equation}
+
+Therefore, the first partial derivative over the 
+$\lambda_i = \left\{ x_i, y_i, z_i \right\}$
+components reads
+\begin{equation} \label{eq:partial-psi-lambda}
+    \therefore
+    \partial_{\lambda_i} \psi 
+    =
+    -\alpha
+    \frac{
+        \sum_{I=1}^{m} 
+        C_{\lambda,iI}
+        \phi_{iI} 
+    }{
+        \sum_{I=1}^{m} \phi_{iI}
+    }
+    \psi
+    ,
+\end{equation}
+where $C_{\lambda,iI}$ is given by \cref{eq:definition-CiI}.
+
+For the laplacian, the second partial derivatives are needed.
+Following the same scheme, the partial derivative over the $x_i$ component of
+$\partial_{x_i} \psi$ from  \cref{eq:fd-psi-2} is taken 
+\begin{equation}
+    \partial_{x_i}^{2} \psi =
+    \partial_{x_i}
+    \left(
+        \frac{
+            \sum_{I=1}^{m} \partial_{x_i} \phi_{iI}
+        }{
+            \sum_{I=1}^{m} \phi_{iI}
+        }
+        \psi
+    \right)
+    ,
+\end{equation}
+that, by the product rule
+\begin{equation} \label{eq:sd-psi-1}
+    \partial_{x_i}^{2} \psi =
+    \psi
+    \underbrace{
+        \partial_{x_i}
+        \left( 
+            \frac{
+                \sum_{I=1}^{m} \partial_{x_i} \phi_{iI}
+            }{
+                \sum_{I=1}^{m} \phi_{iI}
+            }
+        \right)
+    }_{\left( \mathrm{a} \right)}
+    +
+    \underbrace{
+        \frac{
+            \sum_{I=1}^{m} \partial_{x_i} \phi_{iI}
+        }{
+            \sum_{I=1}^{m} \phi_{iI}
+        }
+        \partial_{x_i}
+        \psi
+    }_{\left( \mathrm{b} \right)}
+    .
+\end{equation}
+
+The first partial derivative is treated separately.
+Applying the quotient rule
+\begin{equation} \label{eq:sd-psi-2}
+    \left( \mathrm{a} \right)\
+    \partial_{x_i}
+    \left( 
+        \frac{
+            \sum_{I=1}^{m} \partial_{x_i} \phi_{iI}
+        }{
+            \sum_{I=1}^{m} \phi_{iI}
+        }
+    \right)
+    =
+    \frac{
+        \left( 
+            \sum_{I=1}^{m} \phi_{iI}
+        \right)
+        \partial_{x_i}
+        \left( 
+            \sum_{I=1}^{m} \partial_{x_i} \phi_{iI}
+        \right)
+    }{
+        \left( 
+            \sum_{I=1}^{m} \phi_{iI}
+        \right)^{2}
+    }
+    %
+    -
+    %
+    \frac{
+        \left( 
+            \sum_{I=1}^{m} \partial_{x_i} \phi_{iI}
+        \right)
+        \partial_{x_i}
+        \left( 
+            \sum_{I=1}^{m} \phi_{iI}
+        \right)
+    }{
+        \left( 
+            \sum_{I=1}^{m} \phi_{iI}
+        \right)^{2}
+    }
+    ,
+\end{equation}
+which simplifies to
+\begin{equation} \label{eq:sd-psi-3}
+    \left( \mathrm{a} \right)\
+    \partial_{x_i}
+    \left( 
+        \frac{
+            \sum_{I=1}^{m} \partial_{x_i} \phi_{iI}
+        }{
+            \sum_{I=1}^{m} \phi_{iI}
+        }
+    \right)
+    =
+    \underbrace{
+        \frac{
+            \sum_{I=1}^{m} \partial_{x_i}^{2} \phi_{iI}
+        }{
+            \sum_{I=1}^{m} \phi_{iI}
+        }
+    }_{\left( \mathrm{c} \right)}
+    %
+    -
+    %
+    \frac{
+        \left( 
+            \sum_{I=1}^{m} \partial_{x_i} \phi_{iI}
+        \right)^{2}
+    }{
+        \left( 
+            \sum_{I=1}^{m} \phi_{iI}
+        \right)^{2}
+    }
+    .
+\end{equation}
+
+Again, the first term is calculated separately.
+Recalling \cref{eq:partial-2-phi-lambda}
+\begin{equation}
+    \left( \mathrm{c} \right)\ 
+    \frac{
+        \sum_{I=1}^{m} \partial_{x_i}^{2} \phi_{iI}
+    }{
+        \sum_{I=1}^{m} \phi_{iI}
+    }
+    =
+    -\alpha
+    \frac{
+        \sum_{I=1}^{m}
+        D_{x,iI}
+        \phi_{iI}
+    }{
+        \sum_{I=1}^{m} \phi_{iI}
+    }
+    ,
+\end{equation}
+in \cref{eq:sd-psi-3}
+\begin{equation} \label{eq:derivada-a}
+    \left( \mathrm{a} \right)\
+    \partial_{x_i}
+    \left( 
+        \frac{
+            \sum_{I=1}^{m} \partial_{x_i} \phi_{iI}
+        }{
+            \sum_{I=1}^{m} \phi_{iI}
+        }
+    \right)
+    =
+    -\alpha
+    \frac{
+        \sum_{I=1}^{m}
+        D_{x,iI}
+        \phi_{iI}
+    }{
+        \sum_{I=1}^{m} \phi_{iI}
+    }
+    %
+    -
+    %
+    \left( 
+        \frac{
+            \sum_{I=1}^{m}
+            \partial_{x_i}
+            \phi_{iI}
+        }{
+            \sum_{I=1}^{m} \phi_{iI}
+        }
+    \right)^{2}
+    .
+\end{equation}
+
+The second term in \cref{eq:sd-psi-1}, recalling \cref{eq:fd-psi-2}, reads
+\begin{equation} \label{eq:derivada-b}
+    \left( \mathrm{b} \right)\
+    \frac{
+        \sum_{I=1}^{m} \partial_{x_i} \phi_{iI}
+    }{
+        \sum_{I=1}^{m} \phi_{iI}
+    }
+    \partial_{x_i}
+    \psi
+    =
+    \frac{
+        \sum_{I=1}^{m} \partial_{x_i} \phi_{iI}
+    }{
+        \sum_{I=1}^{m} \phi_{iI}
+    }
+    \frac{
+        \sum_{I=1}^{m} \partial_{x_i} \phi_{iI}
+    }{
+        \sum_{I=1}^{m} \phi_{iI}
+    }
+    \psi
+    =
+    \left( 
+        \frac{
+            \sum_{I=1}^{m} \partial_{x_i} \phi_{iI}
+        }{
+            \sum_{I=1}^{m} \phi_{iI}
+        }
+    \right)^{2}
+    \psi
+    .
+\end{equation}
+
+Substituting \cref{eq:derivada-a,eq:derivada-b} into \cref{eq:sd-psi-1}
+\begin{equation}
+    \partial_{x_i}^{2} \psi =
+    \left[ 
+        -\alpha
+        \frac{
+            \sum_{I=1}^{m}
+            D_{\lambda,iI}
+            \phi_{iI}
+        }{
+            \sum_{I=1}^{m} \phi_{iI}
+        }
+        %
+        -
+        %
+        \left( 
+            \frac{
+                \sum_{I=1}^{m}
+                \partial_{x_i}
+                \phi_{iI}
+            }{
+                \sum_{I=1}^{m} \phi_{iI}
+            }
+        \right)^{2}
+    \right]
+    \psi
+    +
+    \left( 
+        \frac{
+            \sum_{I=1}^{m} \partial_{x_i} \phi_{iI}
+        }{
+            \sum_{I=1}^{m} \phi_{iI}
+        }
+    \right)^{2}
+    \psi
+    ,
+\end{equation}
+which reduces to
+\begin{equation}
+    \partial_{x_i}^{2} \psi =
+    -\alpha
+    \frac{
+        \sum_{I=1}^{m}
+        D_{x,iI}
+        \phi_{iI}
+    }{
+        \sum_{I=1}^{m} \phi_{iI}
+    }
+    \psi
+    .
+\end{equation}
+Therefore, the second partial derivative over the 
+$\lambda_i = \left\{ x_i, y_i, z_i \right\}$
+components reads
+\begin{equation} \label{eq:derivada-psi2-lambda}
+    \therefore
+    \partial_{\lambda_i}^{2} \psi =
+    -\alpha
+    \frac{
+        \sum_{I=1}^{m}
+            D_{\lambda,iI}
+        \phi_{iI}
+    }{
+        \sum_{I=1}^{m} \phi_{iI}
+    }
+    \psi
+    ,
+\end{equation}
+where $D_{\lambda,iI}$ is given by \cref{eq:coeficiente-DiI}.
+
+% ------
+\section{Gradient \& drift vector}
+% ------
+The gradient given in \cref{eq:definition-gradient} is given by summing
+over all $i$ electrons 
+\begin{equation} \label{eq:gradient-1}
+    \nabla \psi \left( \mat{r} \right)
+    =
+    \sum_{i=1}^{n} \partial_{x_i} \psi +
+    \sum_{i=1}^{n} \partial_{y_i} \psi +
+    \sum_{i=1}^{n} \partial_{z_i} \psi
+    ,
+\end{equation}
+substituting \cref{eq:partial-psi-lambda}
+into \cref{eq:gradient-1} and taking $-\alpha \psi$ as a common factor
+\begin{equation}
+    \nabla \psi \left( \mat{r} \right)
+    =
+    -\alpha
+    \sum_{i=1}^{n} 
+    \left[
+        \frac{
+            \sum_{I=1}^{m} 
+            C_{x,iI}
+            \phi_{iI} 
+        }{
+            \sum_{I=1}^{m} \phi_{iI}
+        }
+        +
+        \frac{
+            \sum_{I=1}^{m} 
+            C_{y,iI}
+            \phi_{iI} 
+        }{
+            \sum_{I=1}^{m} \phi_{iI}
+        }
+        +
+        \frac{
+            \sum_{I=1}^{m} 
+            C_{z,iI}
+            \phi_{iI} 
+        }{
+            \sum_{I=1}^{m} \phi_{iI}
+        }
+    \right]
+    \psi \left( \mat{r} \right)
+    ,
+\end{equation}
+which can be rewritten as
+\begin{equation}
+    \nabla \psi \left( \mat{r} \right)
+    =
+    -\alpha
+    \sum_{i=1}^{n} 
+    \left(
+        \frac{
+            \sum_{I=1}^{m} 
+            \left( C_{x,iI} + C_{y,iI} + C_{z,iI} \right)
+            \phi_{iI} 
+        }{
+            \sum_{I=1}^{m} \phi_{iI}
+        }
+    \right)
+    \psi \left( \mat{r} \right)
+    .
+\end{equation}
+
+Therefore, the drift vector defined in \cref{eq:definition-drift-vector} is
+given by
+\begin{equation} \label{eq:final-drift-vector}
+    \therefore
+    \frac{
+        \nabla \psi \left( \mat{r} \right)
+    }{
+        \psi \left( \mat{r} \right)
+    }
+    =
+    -\alpha
+    \sum_{i=1}^{n} 
+    \left(
+        \frac{
+            \sum_{I=1}^{m} 
+            C_{iI}
+            \phi_{iI} 
+        }{
+            \sum_{I=1}^{m} \phi_{iI}
+        }
+    \right)
+    ,
+\end{equation}
+with 
+\begin{equation} \label{eq:constant-CiI}
+    C_{iI}
+    =
+    C_{x,iI} + C_{y,iI} + C_{z,iI}
+    =
+    \frac{
+        \left( x_i - X_I \right) +
+        \left( y_i - Y_I \right) +
+        \left( z_i - Z_I \right)
+    }{
+        \left| \mat{r}_{iI} \right|
+    }
+    .
+\end{equation}
+
+% ------
+\section{Laplacian \& kinetic energy}
+% ------
+The laplacian given in \cref{eq:definition-laplacian} is given by summing
+over all $i$ electrons 
+\begin{equation} \label{eq:laplacian-1}
+    \laplacian \psi \left( \mat{r} \right)
+    =
+    \sum_{i=1}^{n} \partial_{x_i}^{2} \psi +
+    \sum_{i=1}^{n} \partial_{y_i}^{2} \psi +
+    \sum_{i=1}^{n} \partial_{z_i}^{2} \psi
+    ,
+\end{equation}
+substituting \cref{eq:derivada-psi2-lambda}
+into \cref{eq:laplacian-1} and taking $-\alpha \psi$ as a common factor
+\begin{equation}
+    \laplacian \psi \left( \mat{r} \right)
+    =
+    -\alpha
+    \sum_{i=1}^{n} 
+    \left[
+        \frac{
+            \sum_{I=1}^{m} 
+            D_{x,iI}
+            \phi_{iI}
+        }{
+            \sum_{I=1}^{m} \phi_{iI}
+        }
+        +
+        \frac{
+            \sum_{I=1}^{m} 
+            D_{y,iI}
+            \phi_{iI}
+        }{
+            \sum_{I=1}^{m} \phi_{iI}
+        }
+        +
+        \frac{
+            \sum_{I=1}^{m} 
+            D_{z,iI}
+            \phi_{iI}
+        }{
+            \sum_{I=1}^{m} \phi_{iI}
+        }
+    \right]
+    \psi \left( \mat{r} \right)
+    ,
+\end{equation}
+which can be rewritten as
+\begin{equation} \label{eq:laplacian-2}
+    \laplacian \psi \left( \mat{r} \right)
+    =
+    -\alpha
+    \sum_{i=1}^{n} 
+    \left[
+        \frac{
+            \sum_{I=1}^{m} 
+            \left(  
+                D_{x,iI}
+                +
+                D_{y,iI}
+                +
+                D_{z,iI}
+            \right)
+            \phi_{iI}
+        }{
+            \sum_{I=1}^{m} \phi_{iI}
+        }
+    \right]
+    \psi \left( \mat{r} \right)
+    .
+\end{equation}
+
+Now, recalling \cref{eq:coeficiente-DiI-CiI} 
+\begin{align}
+    \notag
+    D_{iI}
+    =
+    D_{x,iI}
+    +
+    D_{y,iI}
+    +
+    D_{z,iI}
+    &=
+    \left[
+        \frac{
+            1
+        }{
+            \left| \mat{r}_{iI} \right|
+        }
+        -
+        \frac{
+            C_{x,iI}^{2}
+            \left( 
+                1 + \alpha \left| \mat{r}_{iI} \right|
+            \right)
+        }{
+            \left| \mat{r}_{iI} \right|
+        }
+    \right]
+    \\
+    \notag
+    \phantom{=}
+    &+
+    \left[
+        \frac{
+            1
+        }{
+            \left| \mat{r}_{iI} \right|
+        }
+        -
+        \frac{
+            C_{y,iI}^{2}
+            \left( 
+                1 + \alpha \left| \mat{r}_{iI} \right|
+            \right)
+        }{
+            \left| \mat{r}_{iI} \right|
+        }
+    \right]
+    \\
+    \phantom{=}
+    &+
+    \left[
+        \frac{
+            1
+        }{
+            \left| \mat{r}_{iI} \right|
+        }
+        -
+        \frac{
+            C_{z,iI}^{2}
+            \left( 
+                1 + \alpha \left| \mat{r}_{iI} \right|
+            \right)
+        }{
+            \left| \mat{r}_{iI} \right|
+        }
+    \right]
+    ,
+\end{align}
+which can be simplified to
+\begin{equation} \label{eq:DiI-1}
+    D_{iI}
+    =
+    \frac{3}{\left| \mat{r}_{iI} \right|}
+    -
+    \frac{
+        \left( 
+            1 + \alpha \left| \mat{r}_{iI} \right|
+        \right)
+    }{
+        \left| \mat{r}_{iI} \right|
+    }
+    \left( 
+        C_{x,iI}^{2} + C_{y,iI}^{2} + C_{z,iI}^{2}
+    \right)
+    .
+\end{equation}
+
+Recalling the definition of $C_{\lambda,iI}$ in \cref{eq:definition-CiI}
+\begin{equation}
+    C_{x,iI}^{2} + C_{y,iI}^{2} + C_{z,iI}^{2}
+    =
+    \frac{\left( x_i - X_I \right)^{2}}{\left| \mat{r}_{iI} \right|^{2}} +
+    \frac{\left( y_i - Y_I \right)^{2}}{\left| \mat{r}_{iI} \right|^{2}} +
+    \frac{\left( z_i - Z_I \right)^{2}}{\left| \mat{r}_{iI} \right|^{2}}
+    ,
+\end{equation}
+or, taking $1 / \left| \mat{r}_{iI} \right|^{2}$ as common factor
+\begin{equation}
+    C_{x,iI}^{2} + C_{y,iI}^{2} + C_{z,iI}^{2}
+    =
+    \frac{1}{\left| \mat{r}_{iI} \right|^{2}}
+    \left[ 
+        \left( x_i - X_I \right)^{2} +
+        \left( y_i - Y_I \right)^{2} +
+        \left( z_i - Z_I \right)^{2}
+    \right]
+    .
+\end{equation}
+
+By the definition given in \cref{eq:definition-mod-rR} 
+\begin{equation}
+    \left| \mat{r}_{iI} \right|^{2}
+    =
+    \left( x_i - X_I \right)^{2} +
+    \left( y_i - Y_I \right)^{2} +
+    \left( z_i - Z_I \right)^{2}
+    ,
+\end{equation}
+it results in 
+\begin{equation}
+    C_{x,iI}^{2} + C_{y,iI}^{2} + C_{z,iI}^{2}
+    =
+    1
+    .
+\end{equation}
+
+In \cref{eq:DiI-1}
+\begin{equation} \label{eq:DiI}
+    D_{iI}
+    =
+    \frac{3}{\left| \mat{r}_{iI} \right|}
+    -
+    \frac{
+        \left( 
+            1 + \alpha \left| \mat{r}_{iI} \right|
+        \right)
+    }{
+        \left| \mat{r}_{iI} \right|
+    }
+    .
+\end{equation}
+
+Then, in \cref{eq:laplacian-2}
+\begin{equation} \label{eq:final-laplacian}
+    \laplacian \psi \left( \mat{r} \right)
+    =
+    -\alpha
+    \sum_{i=1}^{n} 
+    \left(
+        \frac{
+            \sum_{I=1}^{m} 
+            D_{iI}
+            \phi_{iI}
+        }{
+            \sum_{I=1}^{m} \phi_{iI}
+        }
+    \right)
+    \psi \left( \mat{r} \right)
+    .
+\end{equation}
+
+Therefore, the kinetic energy defined in \cref{eq:definition-kinetic-energy} is
+given by 
+\begin{equation}
+    \therefore
+    T_{\mathrm{L}} \left( \mat{r} \right)
+    =
+    -\frac{1}{2}
+    \sum_{i=1}^{n} 
+    \left(
+        \frac{
+            \sum_{I=1}^{m} 
+            - \alpha
+            D_{iI}
+            \phi_{iI}
+        }{
+            \sum_{I=1}^{m} \phi_{iI}
+        }
+    \right)
+    ,
+\end{equation}
+where $D_{iI}$ is defined in \cref{eq:DiI}.
