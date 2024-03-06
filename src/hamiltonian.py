@@ -1,4 +1,8 @@
 import numpy as np
+#
+# Functions to describe the system: basis functions, wavefunction and hamiltonian
+# For mathematical details see the documentation
+#
 
 # Slater determinants as AO basis
 def phi(a, r, R):
@@ -9,11 +13,82 @@ def phi(a, r, R):
     # a -> float
     # r -> (xi, yi, zi)
     # R -> (xj, yj, zj)
-    d = (r[0] - R[0])**2 + (r[1] - R[1])**2 + (r[2] - R[2])**2
-    if d < 0:
+
+    rij2 = (r[0] - R[0])**2 + (r[1] - R[1])**2 + (r[2] - R[2])**2
+    if rij2 < 0:
         return 0
     else:
-        return (a**3/np.pi)**0.5 * np.exp(-a * np.sqrt(d))
+        rij = np.sqrt(rij2)
+        return (a**3/np.pi)**0.5 * np.exp(-a * rij)
+
+# First derivative of the basis functions
+def d_phi(llambda, a, r, R):
+    # First derivative of the 1s Slater type function
+    # partial_{lambda} phi(r_i; R_j) for lambda = {x, y, z}
+
+    # llambda: coordinate which the derivative is taken
+    # a: Slater orbital exponent
+    # r: i-th electron coordinates vector
+    # R: j-th nucleus coordinates vector
+    # llambda -> str
+    # a -> float
+    # r -> (xi, yi, zi)
+    # R -> (xj, yj, zj)
+
+    if llambda == 'x':
+        lambda_ind = 0
+    elif llambda == 'y':
+        lambda_ind = 1
+    elif llambda == 'z':
+        lambda_ind = 2
+    else:
+        raise ValueError('lambda must be x, y or z')
+
+    rij2 = (r[0] - R[0])**2 + (r[1] - R[1])**2 + (r[2] - R[2])**2
+    if rij2 < 0:
+        return 0
+    else:
+        rij = np.sqrt(rij2)
+        if rij == 0.:
+            return -float("inf")
+        else:                    
+            Cij = (r[lambda_ind] - R[lambda_ind])/rij
+            return - a * Cij * phi(a, r, R)
+
+# Second derivative of the basis functions
+def d2_phi(llambda, a, r, R):
+    # Second derivative of the 1s Slater type function
+    # partial_{lambda}^2 phi(r_i; R_j) for lambda = {x, y, z}
+
+    # llambda: coordinate which the derivative is taken
+    # a: Slater orbital exponent
+    # r: i-th electron coordinates vector
+    # R: j-th nucleus coordinates vector
+    # llambda -> str
+    # a -> float
+    # r -> (xi, yi, zi)
+    # R -> (xj, yj, zj)
+
+    if llambda == 'x':
+        lambda_ind = 0
+    elif llambda == 'y':
+        lambda_ind = 1
+    elif llambda == 'z':
+        lambda_ind = 2
+    else:
+        raise ValueError('lambda must be x, y or z')
+
+    rij2 = (r[0] - R[0])**2 + (r[1] - R[1])**2 + (r[2] - R[2])**2
+    if rij2 < 0:
+        return 0
+    else:
+        rij = np.sqrt(rij2)
+        if rij == 0.:
+            return -float("inf")
+        else:                    
+            Cij = (r[lambda_ind] - R[lambda_ind])/rij
+            Dij = 1./rij - (Cij**2 * (1. + a * rij))/rij
+            return - a * Dij * phi(a, r, R)
 
 # Wavefunction
 def psi(a, r, R):
@@ -44,14 +119,15 @@ def d_psi(llambda, a, r, R):
     # First derivative of the wavefunction: partial_{lambda} psi(r_i; R_j)
     # for lambda = {x, y, z}
     #
-    # lambda: coordinate which the derivative is taken
+    # llambda: coordinate which the derivative is taken
     # a: Slater orbital exponent
     # r: i-th electron coordinates vector
     # R: nucleus coordinates vector
-    # lambda -> str
+    # llambda -> str
     # a -> float
     # r -> (xi, yi, zi)
     # R -> (xj, yj, zj)
+
     if llambda == 'x':
         lambda_ind = 0
     elif llambda == 'y':

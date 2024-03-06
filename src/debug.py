@@ -1,9 +1,11 @@
-from hamiltonian import phi, psi, d_psi, d2_psi, potential_ee, potential_eN, potential_NN
+from hamiltonian import phi, d_phi, d2_phi, psi, d_psi, d2_psi, potential_ee, potential_eN, potential_NN
 
 import numpy as np
 
 def all_debug():
     test_phi()
+    test_dphi()
+    test_d2phi()
     test_psi()
     test_dpsi()
     test_d2psi()
@@ -25,6 +27,103 @@ def test_phi():
     assert phi(a, r, R) == expected_output
 
     print("phi() -> ok")
+
+def test_dphi():
+    a = 1.2
+    r = (0., 0., 0.)
+    R = (0., 0., 0.)
+    expected_output = -float("inf")
+    assert d_phi('x', a, r, R) == expected_output
+
+    a = 1.2
+    r = (0., 2., 2.)
+    R = (0., 0., 0.)
+    expected_output = 0.
+    assert d_phi('x', a, r, R) == expected_output
+
+    a = 1.2
+    r = (1., 2., 2.)
+    R = (1., 0., 0.)
+    expected_output = 0.
+    assert d_phi('x', a, r, R) == expected_output
+
+    a = 1.2
+    r = (1., 0., 0.)
+    R = (1., 0., 0.)
+    expected_output = -float("inf")
+    assert d_phi('x', a, r, R) == expected_output
+
+    a = 1.2
+    r = (2., 0., 0.)
+    R = (1., 0., 0.)
+    expected_output = -a * phi(a, r, R)
+    assert d_phi('x', a, r, R) == expected_output
+
+    # Test with numerical derivative
+    x = np.linspace(-5.,5,100)
+    dx = x[1]-x[0]
+    y = []
+    yp = []
+    for i in range(len(x)):
+        r = (x[i], 1., 0.)
+        y.append(phi(a, r, R))
+        yp.append(d_phi('x', a, r, R))
+    # compute numerically the derivative as the gradient
+    num_yp = np.gradient(y, dx)
+    # compare the values with a relative tolerance of 0.1 * num_yp (10%)
+    assert np.allclose(yp[1:-1], num_yp[1:-1], rtol=1e-01)
+
+    print("d_phi() -> ok")
+
+def test_d2phi():
+    # Check with first derivative
+    a = 1.2
+    r = (1., 1., 1.)
+    R = (0., 0., 0.)
+    rij = np.sqrt((r[0] - R[0])**2 + (r[1] - R[1])**2 + (r[2] - R[2])**2)
+    Cij = (r[0] - R[0])/rij
+    expected_output = -a/rij * phi(a, r, R) - (Cij * (1 + a * rij))/rij * d_phi('x', a, r, R)
+    assert np.isclose(d2_phi('x', a, r, R), expected_output, atol=1e-16)
+
+    # Case when |rij| = 0
+    a = 1.2
+    r = (0., 0., 0.)
+    R = (0., 0., 0.)
+    expected_output = -float("inf")
+    assert d2_phi('x', a, r, R) == expected_output
+
+    # Case when Cij = 0, |rij| /= 0
+    a = 1.2
+    r = (1., 1., 1.)
+    R = (1., 0., 0.)
+    rij = np.sqrt((r[0] - R[0])**2 + (r[1] - R[1])**2 + (r[2] - R[2])**2)
+    expected_output = -a/rij * phi(a, r, R)
+    assert d2_phi('x', a, r, R) == expected_output
+
+    # Case when Dij = 1. <- C = 0. and |rij| = 1.
+    a = 1.2
+    r = (1., 1., 0.)
+    R = (1., 0., 0.)
+    expected_output = -a * phi(a, r, R)
+    assert d2_phi('x', a, r, R) == expected_output
+
+    # Test with numerical derivative
+    x = np.linspace(-5.,5,100)
+    dx = x[1]-x[0]
+    y = []
+    y2p = []
+    for i in range(len(x)):
+        r = (x[i], 1., 0.)
+        y.append(phi(a, r, R))
+        y2p.append(d2_phi('x', a, r, R))
+    # compute numerically the derivative as the gradient
+    num_yp = np.gradient(y, dx)
+    num_y2p = np.gradient(num_yp, dx)
+    # compare the values with a relative tolerance of 0.3 * num_yp (30%)
+    # remove first and last points of the gradient
+    assert np.allclose(y2p[1:-1], num_y2p[1:-1], rtol=3.0e-01)
+
+    print("d2_phi() -> ok")
 
 def test_psi():
     a = 1.2
