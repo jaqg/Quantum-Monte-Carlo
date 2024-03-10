@@ -1,4 +1,4 @@
-from hamiltonian import phi, d_phi, d2_phi, psi, d_psi, d2_psi, potential_ee, potential_eN, potential_NN
+from hamiltonian import phi, d_phi, d2_phi, psi, d_psi, d2_psi, potential_ee, potential_eN, potential_NN, potential, kinetic_N, kinetic_e, kinetic
 
 import numpy as np
 
@@ -12,6 +12,10 @@ def all_debug():
     test_potential_ee()
     test_potential_eN()
     test_potential_NN()
+    test_potential()
+    test_kinetic_N()
+    test_kinetic_e()
+    test_kinetic()
 
 def test_phi():
     # Case when |rij| = 0
@@ -317,4 +321,56 @@ def test_potential_NN():
     assert potential_NN(R, Z) == expected_output
 
     print("potential_NN() -> ok")
+
+def test_potential():
+    r = (1., 1., 1.)
+    R = (0., 0., 0.)
+    Z = [1]
+    expected_output = potential_ee(r) + potential_eN(r, R, Z) + potential_NN(R, Z)
+    assert potential(r, R, Z) == expected_output
+
+    print("potential() -> ok")
+
+def test_kinetic_N():
+    # Born-Oppenheimier approximation
+    expected_output = 0.
+    assert kinetic_N() == expected_output
+
+    print("kinetic_N() -> ok")
+
+def test_kinetic_e():
+    # Case when |rij| = 0
+    a = 1.2
+    r = (0., 0., 0.)
+    R = (0., 0., 0.)
+    expected_output = float("inf")
+    assert kinetic_e(a, r, R) == expected_output
+
+    # Case for 1 electron => K_e = 1/2 * alpha * D_{11}
+    a = 1.2
+    r = (1., 1., 1.)
+    R = (0., 0., 0.)
+    rij = np.sqrt((r[0] - R[0])**2 + (r[1] - R[1])**2 + (r[2] - R[2])**2)
+    D11 = 3./rij - (1 + a * rij)/rij
+    expected_output = 1./2. * a * D11
+    assert kinetic_e(a, r, R) == expected_output
+
+    # Case when Dij = 0 <- 1 + a|rij| = 3 <- a = 2/|rij|
+    r = (1., 1., 1.)
+    R = (0., 0., 0.)
+    rij = np.sqrt((r[0] - R[0])**2 + (r[1] - R[1])**2 + (r[2] - R[2])**2)
+    a = 2./rij
+    expected_output = 0.
+    assert kinetic_e(a, r, R) == expected_output
+
+    print("kinetic_e() -> ok")
+
+def test_kinetic():
+    a = 1.2
+    r = (1., 1., 1.)
+    R = (0., 0., 0.)
+    expected_output = kinetic_e(a, r, R) + kinetic_N()
+    assert kinetic(a, r, R) == expected_output
+
+    print("kinetic() -> ok")
 

@@ -160,7 +160,7 @@ def d_psi(llambda, a, r, R):
                 if rij == 0.:
                     return float("inf")
                 else:                    
-                    Cij = (r[lambda_ind] - R[lambda_ind])/rij
+                    Cij = (ri[lambda_ind] - Rj[lambda_ind])/rij
                     nominator += Cij * phi(a, ri, Rj)
             denominator += phi(a, ri, Rj)
         if denominator == 0.:
@@ -214,7 +214,8 @@ def d2_psi(llambda, a, r, R):
                 if rij == 0.:
                     return float("inf")
                 else:                    
-                    Dij = 1./rij - ( (a * rij + 1.) * (ri[lambda_ind] - Rj[lambda_ind])**2 )/(rij**3)
+                    Cij = (ri[lambda_ind] - Rj[lambda_ind])
+                    Dij = 1./rij - (Cij**2 * (1. + a * rij))/rij**3
                     nominator += Dij * phi(a, ri, Rj)
             denominator += phi(a, ri, Rj)
         if denominator == 0.:
@@ -359,3 +360,50 @@ def potential(r, R, Z):
 def kinetic_N():
     # Born-Oppenheimer approximation is considered
     return 0.
+
+# Kinetic energy of the electrons
+def kinetic_e(a, r, R):
+    # a: Slater orbital exponent
+    # r: electron coordinates vector
+    # R: nucleus coordinates vector
+    # a -> float
+    # r -> (x1, y1, z1, x2, y2, z2, ..., xn, yn, zn)
+    # R -> (x1, y1, z1, x2, y2, z2, ..., xm, ym, zm)
+    
+    n = int(len(r)/3)  # number of electrons
+    m = int(len(R)/3)  # number of nucleus
+
+    suma = 0.
+    for i in range(n):
+        i_ind = 3*i
+        ri = r[i_ind:i_ind+3]
+        numerator = 0.
+        denominator = 0.
+        for j in range(m):
+            j_ind = 3*j
+            Rj = R[j_ind:j_ind+3]
+            rij2 = ((ri[0] - Rj[0])**2 +  # (xi - Xj)^2
+                    (ri[1] - Rj[1])**2 +  # (yi - Yj)^2
+                    (ri[2] - Rj[2])**2    # (zi - Zj)^2
+                   )
+            if rij2 < 0.:
+                return 0
+            else:
+                rij = np.sqrt(rij2)
+                if rij == 0.:
+                    return float("inf")
+                else:                    
+                    Dij = 3./rij - (1. + a * rij)/rij
+                    numerator += -a * Dij * phi(a, ri, Rj)
+                    denominator += phi(a, ri, Rj)
+        suma += numerator/denominator
+    return -1./2. * suma
+
+# Total kinetic energy
+def kinetic(a, r, R):
+    return kinetic_N() + kinetic_e(a, r, R)
+
+# Local energy
+def e_loc(a, r, R, Z):
+    return kinetic(a, r, R) + potential(r, R, Z)
+
