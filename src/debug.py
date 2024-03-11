@@ -1,8 +1,10 @@
-from hamiltonian import phi, d_phi, d2_phi, psi, d_psi, d2_psi, potential_ee, potential_eN, potential_NN, potential, kinetic_N, kinetic_e, kinetic
+from hamiltonian import phi, d_phi, d2_phi, psi, d_psi, d2_psi, potential_ee, potential_eN, potential_NN, potential, kinetic_N, kinetic_e, kinetic, e_loc
+from MonteCarlo import average, variance, error, drift_vector, MC
 
 import numpy as np
 
 def all_debug():
+    print('\n-hamiltonian.py:')
     test_phi()
     test_dphi()
     test_d2phi()
@@ -16,6 +18,13 @@ def all_debug():
     test_kinetic_N()
     test_kinetic_e()
     test_kinetic()
+    test_e_loc()
+    print('\n-MonteCarlo.py:')
+    test_average()
+    test_variance()
+    test_error()
+    test_drift_vector()
+    test_MC()
 
 def test_phi():
     # Case when |rij| = 0
@@ -249,52 +258,39 @@ def test_d2psi():
     print("d2_psi() -> ok")
 
 def test_potential_ee():
-    expected_output = 1./np.sqrt(14.)
-    for r in [(1., 2., 3.), (2., 1., 3.), (3., 2., 1.),
-              (-1., 2., 3.), (1., -2., 3.), (1., 2., -3.)]:
-          assert potential_ee(r) == expected_output
+    # Case for 1 electron
+    r = (1., 2., 3.)
+    expected_output = 0.
+    assert potential_ee(r) == expected_output
 
-    expected_output = 1./np.sqrt(13.)
-    for r in [(0., 2., 3.), (2., 0., 3.), (3., 2., 0.),
-              (-0., 2., 3.), (0., -2., 3.), (0., 2., -3.)]:
-          assert potential_ee(r) == expected_output
-
-    expected_output = 1./3.
-    for r in [(0., 0., 3.), (0., 0., 3.), (3., 0., 0.),
-              (-0., 0., 3.), (0., -0., 3.), (0., 0., -3.)]:
-          assert potential_ee(r) == expected_output
-
+    # Case for multiple electrons
+    r = (1., 2., 3., 4., 5., 6., 7., 8., 9.)
     expected_output = 5./(np.sqrt(3.) * 6.)
-    for r in [(1., 2., 3., 4., 5., 6., 7., 8., 9.)]:
-          assert potential_ee(r) == expected_output
+    assert potential_ee(r) == expected_output
 
     # Case when |r| = 0
-    r = (0., 0., 0.)
+    r = (0., 0., 0., 0., 0., 0.)
     assert potential_ee(r) == float("inf")
 
     print("potential_ee() -> ok")
 
 def test_potential_eN():
-    expected_output = -potential_ee((1., 2., 3.))
-    R = (0., 0., 0.)
-    Z = [1]
-    for r in [(1., 2., 3.), (2., 1., 3.), (3., 2., 1.),
-              (-1., 2., 3.), (1., -2., 3.), (1., 2., -3.)]:
-          assert potential_eN(r, R, Z) == expected_output
-
-    expected_output = -2. * potential_ee((1., 2., 3.))
+    # Case for 1 electron and 1 nucleus centered at the origin
+    r = (1., 2., 3.)
     R = (0., 0., 0.)
     Z = [2]
+    expected_output = -2./np.sqrt(np.dot(r, r))
     for r in [(1., 2., 3.), (2., 1., 3.), (3., 2., 1.),
               (-1., 2., 3.), (1., -2., 3.), (1., 2., -3.)]:
           assert potential_eN(r, R, Z) == expected_output
 
-    expected_output = -(
-            1./np.sqrt(77.) + 1./np.sqrt(14) + np.sqrt(2.)/5. + 2./np.sqrt(5.)
-            )
+    # Case for multiple electrons and nucleus
     r = (1., 2., 3., 4., 5., 6.)
     R = (0., 0., 0., 1., 1., 1.)
     Z = [1, 2]
+    expected_output = -(
+            1./np.sqrt(77.) + 1./np.sqrt(14) + np.sqrt(2.)/5. + 2./np.sqrt(5.)
+            )
     assert potential_eN(r, R, Z) == expected_output
 
     # Case when |r - R| = 0
@@ -304,20 +300,22 @@ def test_potential_eN():
     print("potential_eN() -> ok")
 
 def test_potential_NN():
-    expected_output = 2./np.sqrt(3.)
-    R = (0., 0., 0., 1., 1., 1.)
-    Z = [1, 2]
+    # Case for 1 electron
+    R = (1., 2., 3.)
+    Z = [1]
+    expected_output = 0.
     assert potential_NN(R, Z) == expected_output
 
-    R = (1., 1., 1.)
-    Z = [2]
-    expected_output = Z[0] * potential_ee(R)
+    # Case for multiple electrons
+    R = (0., 0., 0., 1., 1., 1.)
+    Z = [1, 2]
+    expected_output = 2./np.sqrt(3.)
     assert potential_NN(R, Z) == expected_output
 
     # Case when |R| = 0
-    expected_output = 0.
-    R = (0., 0., 0.)
-    Z = [1]
+    R = (0., 0., 0., 0., 0., 0.)
+    Z = [1, 1]
+    expected_output = float("inf")
     assert potential_NN(R, Z) == expected_output
 
     print("potential_NN() -> ok")
@@ -374,3 +372,69 @@ def test_kinetic():
 
     print("kinetic() -> ok")
 
+def test_e_loc():
+    a = 1.2
+    r = (1., 1., 1.)
+    R = (0., 0., 0.)
+    Z = [1]
+    expected_output = kinetic(a, r, R) + potential(r, R, Z)
+    assert e_loc(a, r, R, Z) == expected_output
+
+    print("e_loc() -> ok")
+
+def test_average():
+    # Case for "1 element array"
+    a = [1.]
+    expected_output = a[0]
+    assert average(a) == expected_output
+
+    # Trivial case
+    a = [-1., 1.]
+    expected_output = 0.
+    assert average(a) == expected_output
+    
+    print("average() -> ok")
+
+def test_variance():
+    # Case for "1 element array"
+    a = [1.]
+    expected_output = 0.
+    assert variance(a) == expected_output
+
+    # Trivial case
+    a = [1., 1.]
+    expected_output = 0.
+    assert variance(a) == expected_output
+
+    # Trivial case
+    a = [1., 3.]
+    expected_output = 2.
+    assert variance(a) == expected_output
+    
+    print("variance() -> ok")
+
+def test_error():
+    # Case of no error
+    a = [1., 1.]
+    expected_output = 0.
+    assert error(a) == expected_output
+    
+    print("error() -> ok")
+
+def test_drift_vector():
+    # Case for 1 electron and 1 nucleus
+    a = 1.2
+    r = (1., 1., 1.)
+    R = (0., 0., 0.)
+    r11 = np.sqrt(3.)
+    vec = (1., 1., 1.)
+    expected_output = []
+    for i in vec:
+        expected_output.append(-a/r11 * i)
+    assert np.allclose(drift_vector(a, r, R), expected_output, rtol=1e-03)
+
+    print("drift_vector() -> ok")
+
+def test_MC():
+        
+    print("MC() -> ok")

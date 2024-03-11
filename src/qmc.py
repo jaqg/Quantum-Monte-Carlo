@@ -1,6 +1,7 @@
+from IO import title, section, end
 from debug import all_debug
 from hamiltonian import phi, d_phi, d2_phi, psi, d_psi, d2_psi, potential_ee, potential_eN, potential_NN, potential, kinetic_e, kinetic_N, kinetic, e_loc
-from IO import title, section, end
+from MonteCarlo import average, error, MC, Metropolis_symmetric_MC, Metropolis_generalized_MC, Pure_diffusion_MC, VMC, output_VMC, PDMC, output_PDMC
 
 import numpy as np
 
@@ -24,7 +25,7 @@ section('Pruebas')
 a = 1.2
 r_SI = (1., 2., 3., 4., 5., 6., 7., 8., 9.)
 R_SI = (0., 0., 0., 1., 1., 1.)
-Z = (1, 2)
+Z = (1, 1)
 
 angstrom_to_au = 1.8897259886
 r = []
@@ -74,5 +75,23 @@ eloc = e_loc(a, r, R, Z)
 print('E_loc = Ktot + Vtot = ', eloc)
 print('\n')
 
+#-----------------------------------------------------------------------------
+section('MC')
+a = 1.2
+ne = 1
+R = (0., 0., 0.)
+Z = [1]
+nmc = 1000
+dt_VMC = 5.
+dt_metro = 1.
+tau = 100
+eref = -0.5
+dt_PDMC = 0.05
+mc_trials = 30
+#-----------------------------------------------------------------------------
+sVMC, syMe, geMe = VMC(a, ne, R, Z, mc_trials, nmc, dt_VMC, dt_metro)
+output_VMC(sVMC, syMe, geMe)
+sPDMC = PDMC(a, ne, R, Z, mc_trials, nmc, dt_PDMC, tau, eref)
+output_PDMC(sPDMC)
 # -----------------------------------------------------------------------------
 end()

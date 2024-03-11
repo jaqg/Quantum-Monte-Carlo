@@ -67,11 +67,23 @@ The drif vector is given by
     }
     ,
 \end{equation}
-where the gradient reads
+where the gradient $\nabla \psi \left( \mat{r} \right)$ reads
 \begin{equation} \label{eq:definition-gradient}
     \nabla
+    \psi \left( \mat{r} \right)
     =
-    \partial_x + \partial_y + \partial_z
+    \nabla
+    \psi \left( x_1, y_1, z_1, \ldots, x_n, y_n, z_n \right)
+    =
+    \begin{pmatrix}
+        \partial_{x_1} \psi \\
+        \partial_{y_1} \psi \\
+        \partial_{z_1} \psi \\
+        \vdots \\
+        \partial_{x_n} \psi \\
+        \partial_{y_n} \psi \\
+        \partial_{z_n} \psi
+    \end{pmatrix}
     .
 \end{equation}
 
@@ -965,68 +977,164 @@ where $D_{\lambda,iI}$ is given by \cref{eq:coeficiente-DiI}.
 % ------
 \section{Gradient \& drift vector}
 % ------
-The gradient given in \cref{eq:definition-gradient} is given by summing
-over all $i$ electrons 
-\begin{equation} \label{eq:gradient-1}
-    \nabla \psi \left( \mat{r} \right)
+Substituting \cref{eq:partial-psi-lambda}
+into the definition of the gradient given in \cref{eq:definition-gradient}
+\begin{equation}
+    \nabla
+    \psi \left( \mat{r} \right)
     =
-    \sum_{i=1}^{n} \partial_{x_i} \psi +
-    \sum_{i=1}^{n} \partial_{y_i} \psi +
-    \sum_{i=1}^{n} \partial_{z_i} \psi
+    \begin{pmatrix}
+        \partial_{x_1} \psi \\
+        \partial_{y_1} \psi \\
+        \partial_{z_1} \psi \\
+        \vdots \\
+        \partial_{x_n} \psi \\
+        \partial_{y_n} \psi \\
+        \partial_{z_n} \psi
+    \end{pmatrix}
+    =
+    \begin{pmatrix}
+        -\alpha
+        \left( 
+            \sum_{I=1}^{m} 
+            C_{x,1I}
+            \phi_{1I} 
+        \right)
+        \left( 
+            \sum_{I=1}^{m} \phi_{1I}
+        \right)^{-1}
+        \psi
+        \\
+        %
+        -\alpha
+        \left( 
+            \sum_{I=1}^{m} 
+            C_{y,1I}
+            \phi_{1I} 
+        \right)
+        \left( 
+            \sum_{I=1}^{m} \phi_{1I}
+        \right)^{-1}
+        \psi
+        \\
+        %
+        -\alpha
+        \left( 
+            \sum_{I=1}^{m} 
+            C_{z,1I}
+            \phi_{1I} 
+        \right)
+        \left( 
+            \sum_{I=1}^{m} \phi_{1I}
+        \right)^{-1}
+        \psi
+        \\
+        \vdots \\
+        -\alpha
+        \left( 
+            \sum_{I=1}^{m} 
+            C_{x,nI}
+            \phi_{nI} 
+        \right)
+        \left( 
+            \sum_{I=1}^{m} \phi_{nI}
+        \right)^{-1}
+        \psi
+        \\
+        %
+        -\alpha
+        \left( 
+            \sum_{I=1}^{m} 
+            C_{y,nI}
+            \phi_{nI} 
+        \right)
+        \left( 
+            \sum_{I=1}^{m} \phi_{nI}
+        \right)^{-1}
+        \psi
+        \\
+        %
+        -\alpha
+        \left( 
+            \sum_{I=1}^{m} 
+            C_{z,nI}
+            \phi_{nI} 
+        \right)
+        \left( 
+            \sum_{I=1}^{m} \phi_{nI}
+        \right)^{-1}
+        \psi
+    \end{pmatrix}
     ,
 \end{equation}
-substituting \cref{eq:partial-psi-lambda}
-into \cref{eq:gradient-1} and taking $-\alpha \psi$ as a common factor
+and taking $-\alpha \psi$ as a common factor
 \begin{equation}
-    \nabla \psi \left( \mat{r} \right)
+    \nabla
+    \psi \left( \mat{r} \right)
     =
     -\alpha
-    \sum_{i=1}^{n} 
-    \left[
-        \frac{
+    \begin{pmatrix}
+        \left( 
             \sum_{I=1}^{m} 
-            C_{x,iI}
-            \phi_{iI} 
-        }{
-            \sum_{I=1}^{m} \phi_{iI}
-        }
-        +
-        \frac{
+            C_{x,1I}
+            \phi_{1I} 
+        \right)
+        \left( 
+            \sum_{I=1}^{m} \phi_{1I}
+        \right)^{-1}
+        \\
+        %
+        \left( 
             \sum_{I=1}^{m} 
-            C_{y,iI}
-            \phi_{iI} 
-        }{
-            \sum_{I=1}^{m} \phi_{iI}
-        }
-        +
-        \frac{
+            C_{y,1I}
+            \phi_{1I} 
+        \right)
+        \left( 
+            \sum_{I=1}^{m} \phi_{1I}
+        \right)^{-1}
+        \\
+        %
+        \left( 
             \sum_{I=1}^{m} 
-            C_{z,iI}
-            \phi_{iI} 
-        }{
-            \sum_{I=1}^{m} \phi_{iI}
-        }
-    \right]
-    \psi \left( \mat{r} \right)
+            C_{z,1I}
+            \phi_{1I} 
+        \right)
+        \left( 
+            \sum_{I=1}^{m} \phi_{1I}
+        \right)^{-1}
+        \\
+        \vdots \\
+        \left( 
+            \sum_{I=1}^{m} 
+            C_{x,nI}
+            \phi_{nI} 
+        \right)
+        \left( 
+            \sum_{I=1}^{m} \phi_{nI}
+        \right)^{-1}
+        \\
+        %
+        \left( 
+            \sum_{I=1}^{m} 
+            C_{y,nI}
+            \phi_{nI} 
+        \right)
+        \left( 
+            \sum_{I=1}^{m} \phi_{nI}
+        \right)^{-1}
+        \\
+        %
+        \left( 
+            \sum_{I=1}^{m} 
+            C_{z,nI}
+            \phi_{nI} 
+        \right)
+        \left( 
+            \sum_{I=1}^{m} \phi_{nI}
+        \right)^{-1}
+    \end{pmatrix}
+    \psi
     ,
-\end{equation}
-which can be rewritten as
-\begin{equation}
-    \nabla \psi \left( \mat{r} \right)
-    =
-    -\alpha
-    \sum_{i=1}^{n} 
-    \left(
-        \frac{
-            \sum_{I=1}^{m} 
-            \left( C_{x,iI} + C_{y,iI} + C_{z,iI} \right)
-            \phi_{iI} 
-        }{
-            \sum_{I=1}^{m} \phi_{iI}
-        }
-    \right)
-    \psi \left( \mat{r} \right)
-    .
 \end{equation}
 
 Therefore, the drift vector defined in \cref{eq:definition-drift-vector} is
@@ -1040,33 +1148,69 @@ given by
     }
     =
     -\alpha
-    \sum_{i=1}^{n} 
-    \left(
-        \frac{
+    \begin{pmatrix}
+        \left( 
             \sum_{I=1}^{m} 
-            C_{iI}
-            \phi_{iI} 
-        }{
-            \sum_{I=1}^{m} \phi_{iI}
-        }
-    \right)
+            C_{x,1I}
+            \phi_{1I} 
+        \right)
+        \left( 
+            \sum_{I=1}^{m} \phi_{1I}
+        \right)^{-1}
+        \\
+        %
+        \left( 
+            \sum_{I=1}^{m} 
+            C_{y,1I}
+            \phi_{1I} 
+        \right)
+        \left( 
+            \sum_{I=1}^{m} \phi_{1I}
+        \right)^{-1}
+        \\
+        %
+        \left( 
+            \sum_{I=1}^{m} 
+            C_{z,1I}
+            \phi_{1I} 
+        \right)
+        \left( 
+            \sum_{I=1}^{m} \phi_{1I}
+        \right)^{-1}
+        \\
+        \vdots \\
+        \left( 
+            \sum_{I=1}^{m} 
+            C_{x,nI}
+            \phi_{nI} 
+        \right)
+        \left( 
+            \sum_{I=1}^{m} \phi_{nI}
+        \right)^{-1}
+        \\
+        %
+        \left( 
+            \sum_{I=1}^{m} 
+            C_{y,nI}
+            \phi_{nI} 
+        \right)
+        \left( 
+            \sum_{I=1}^{m} \phi_{nI}
+        \right)^{-1}
+        \\
+        %
+        \left( 
+            \sum_{I=1}^{m} 
+            C_{z,nI}
+            \phi_{nI} 
+        \right)
+        \left( 
+            \sum_{I=1}^{m} \phi_{nI}
+        \right)^{-1}
+    \end{pmatrix}
     ,
 \end{equation}
-with 
-\begin{equation} \label{eq:constant-CiI}
-    C_{iI}
-    =
-    C_{x,iI} + C_{y,iI} + C_{z,iI}
-    =
-    \frac{
-        \left( x_i - X_I \right) +
-        \left( y_i - Y_I \right) +
-        \left( z_i - Z_I \right)
-    }{
-        \left| \mat{r}_{iI} \right|
-    }
-    .
-\end{equation}
+where $C_{\lambda,iI}$ is given by \cref{eq:definition-CiI}.
 
 % ------
 \section{Laplacian \& kinetic energy}

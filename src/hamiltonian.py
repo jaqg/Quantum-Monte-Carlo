@@ -231,18 +231,9 @@ def potential_ee(r):
     n = int(len(r)/3)  # number of electrons
     pot = 0.
 
-    # If there is one electron, the potential becomes 1/|r|
+    # If there is one electron, the potential is null
     if n == 1:
-        r2 = r[0]**2 + r[1]**2 + r[2]**2
-        if r2 < 0.:
-            return 0
-        else:
-            r_mod = np.sqrt(r2)
-            # if |r| = 0, 1/|r| -> inf
-            if r_mod == 0.:
-                return float("inf")
-            else:
-                return 1./r_mod
+        return 0.
     # For more than 1 electron, compute the pair repulsion
     else:
         for i in range(n+1):
@@ -318,18 +309,9 @@ def potential_NN(R, Z):
 
     pot = 0.
 
-    # If there is one nucleus, the potential becomes Z/|R|
+    # If there is one nucleus, the potential is null
     if m == 1:
-        R2 = R[0]**2 + R[1]**2 + R[2]**2
-        if R2 < 0.:
-            return 0
-        else:
-            R_mod = np.sqrt(R2)
-            # if |R| = 0, take potential = 0.
-            if R_mod == 0.:
-                return 0.
-            else:
-                return Z[0]/R_mod
+        return 0.
     # For more than 1 nucleus, compute the pair repulsion
     else:
         for i in range(m+1):
@@ -401,9 +383,23 @@ def kinetic_e(a, r, R):
 
 # Total kinetic energy
 def kinetic(a, r, R):
+    # a: Slater orbital exponent
+    # r: electron coordinates vector
+    # R: nucleus coordinates vector
+    # a -> float
+    # r -> (x1, y1, z1, x2, y2, z2, ..., xn, yn, zn)
+    # R -> (x1, y1, z1, x2, y2, z2, ..., xm, ym, zm)
     return kinetic_N() + kinetic_e(a, r, R)
 
 # Local energy
 def e_loc(a, r, R, Z):
+    # a: Slater orbital exponent
+    # r: electron coordinates vector
+    # R: nucleus coordinates vector
+    # Z: nucleus charge
+    # a -> float
+    # r -> (x1, y1, z1, x2, y2, z2, ..., xn, yn, zn)
+    # R -> (x1, y1, z1, x2, y2, z2, ..., xm, ym, zm)
+    # Z -> (z1, z2, ..., zm)
     return kinetic(a, r, R) + potential(r, R, Z)
 
