@@ -38,6 +38,7 @@ for sym in symbolsToDelete:
 
 # -----------------------------------------------------------------------------
 section('Numerical derivatives')
+print('Computing numerical derivatives: gradient & finite difference...')
 # -----------------------------------------------------------------------------
 # Phi for 1 electron & 1 atom
 a = 1.2
@@ -74,7 +75,7 @@ npsi = []
 npsip = []
 npsip2 = []
 for i in range(len(x)):
-    r = (x[i], 1., 0., x[i], 1., 0., x[i], 1., 0.)
+    r = (R[0]+x[i], 1., 0., R[3]+x[i], 1., 0., R[6]+x[i], 1., 0.)
     npsi.append(psi(a, r, R))
     npsip.append(d_psi('x', a, r, R))
     npsip2.append(d2_psi('x', a, r, R))
@@ -92,13 +93,16 @@ npsisecond=ndnpsifirst/ndxfirst
 # -----------------------------------------------------------------------------
 section('Plots')
 # -----------------------------------------------------------------------------
+print('Making plots...')
+
+# Main figure
 fig, axs = plt.subplots(1, 2, figsize=(7.2*1.5, 4.45))
 fig.subplots_adjust(left=.15, bottom=.16, right=.99, top=.97)
 
 for ax in axs:
     for i in range(int(len(R)/3)):
-        ax.vlines(x=R[3*i], ymin=-1., ymax=1., color='k', linestyle='--', lw=1.)
-    ax.hlines(y=0., xmin=-6., xmax=6., color='k', linestyle='--', lw=1)
+        ax.vlines(x=R[3*i], ymin=-1., ymax=1., color='k', linestyle='-', lw=1.)
+    ax.hlines(y=0., xmin=-6., xmax=6., color='k', linestyle='-', lw=1)
 
 ax = axs[0]
 ax.plot(x, nphi, label=r'$\phi$')
@@ -111,7 +115,7 @@ ax.plot(nxsecond, nphisecond, label=r'fin. diff. $\partial_x^2 \phi$', ls='-.')
 
 # ax.set_xlim(-5.,5.)
 ax.set_ylim(-.3,.3)
-ax.set(title=r'$\phi\left( \mathbf{r} \right)$')
+ax.set(title=r'$\phi\left( \mathbf{r}; \mathbf{R} \right)$')
 
 ax = axs[1]
 ax.plot(x, npsi, label=r'$\psi$')
@@ -124,9 +128,29 @@ ax.plot(nxsecond, npsisecond, label=r'fin. diff. $\partial_x^2 \psi$', ls='-.')
 
 # ax.set_xlim(-6.,6.)
 ax.set_ylim(-.06,.04)
-ax.set(title=r'$\psi\left( \mathbf{r} \right)$')
+ax.set(title=r'$\psi\left( \mathbf{r}; \mathbf{R} \right)$')
 
+# Draw circles for nucleus & electrons
 for ax in axs:
+    # Circles for the electrons
+    circ_size = 8.
+    for i in range(int(len(r)/3)):
+        if i == 0:
+            ax.plot(r[3*i], r[3*i+1], 'o', color='r', fillstyle='full',
+                    markersize=circ_size, label=r'Electrons')
+        else:
+            ax.plot(r[3*i], r[3*i+1], 'o', color='r', fillstyle='full', markersize=circ_size)
+            
+
+    # Circles for the nucleus
+    for i in range(int(len(R)/3)):
+        if i == 0:
+            ax.plot(R[3*i], R[3*i+1], 'o', color='k',  fillstyle='full',
+                    markersize=circ_size, label=r'Nucleus')
+        else:
+            ax.plot(R[3*i], R[3*i+1], 'o', color='k',  fillstyle='full', markersize=circ_size)
+            
+    # Common settings
     ax.set(
             xlabel=r'$x$',
             ylabel=r'$y$'
@@ -135,6 +159,8 @@ for ax in axs:
 
 # plt.show()
 
+print('Saving plots in ./plots')
 nombre_grafica = os.path.basename(__file__).replace(".py", ".pdf")
-plt.savefig(nombre_grafica, transparent='True', bbox_inches='tight')
+dir = os.path.dirname(os.path.abspath(__file__)).replace("src", "plots")
+plt.savefig(dir+"/"+nombre_grafica, transparent='True', bbox_inches='tight')
 # -----------------------------------------------------------------------------
