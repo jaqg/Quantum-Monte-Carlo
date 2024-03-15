@@ -6,19 +6,12 @@ This repository contains Python implementations of Monte Carlo algorithms for si
 
 ## Table of Contents
 
-- [Folder Structure](#folder-structure)
 - [Installation](#installation)
 - [Usage](#usage)
+- [Folder Structure](#folder-structure)
 - [Documentation](#documentation)
 - [Contribution](#contribution)
 - [License](#license)
-
-## Folder Structure
-
-- **documentation**: Contains documentation files.
-- **examples**: Contains input files for the examples H, H2, H2+, H3+, and He. Additionally, it includes a folder named `reference-calculation` with energies calculated using Gaussian software at HF/3-21G level.
-- **plots**: Contains generated plots from the program, specifically from the scripts `src/make-plots.py` and `src/test-derivatives.py`.
-- **src**: Contains all code and scripts.
 
 ## Installation
 
@@ -53,21 +46,12 @@ python particle_simulation.py
 
 This will run a simulation of a particle system using the Monte Carlo method.
 
-## Documentation
+## Folder Structure
 
-## Contribution
-
-Contributions are welcome! If you would like to contribute to this project, follow these steps:
-
-1. Fork the repository.
-2. Create a new branch for your contribution (`git checkout -b feature/new-feature`).
-3. Make your changes and commit (`git commit -am 'Add new feature'`).
-4. Push your branch (`git push origin feature/new-feature`).
-5. Open a pull request on GitHub.
-
-## License
-
-This project is licensed under the [MIT License](LICENSE).
+- **documentation**: Contains documentation files.
+- **examples**: Contains input files for the examples H, H2, H2+, H3+, and He. Additionally, it includes a folder named `reference-calculation` with energies calculated using Gaussian software at HF/3-21G level.
+- **plots**: Contains generated plots from the program, specifically from the scripts `src/make-plots.py` and `src/test-derivatives.py`.
+- **src**: Contains all code and scripts.
 
 ---
 
@@ -92,3 +76,18 @@ Additionally, there are two files in the `src/` folder: `mine.mplstyle` which pr
 - **derivatives**: Executes the `src/test-derivatives.py` program.
 - **clean_examples**: Deletes output files from the `examples/` folder.
 
+## Documentation
+
+## Contribution
+
+Contributions are welcome! If you would like to contribute to this project, follow these steps:
+
+1. Fork the repository.
+2. Create a new branch for your contribution (`git checkout -b feature/new-feature`).
+3. Make your changes and commit (`git commit -am 'Add new feature'`).
+4. Push your branch (`git push origin feature/new-feature`).
+5. Open a pull request on GitHub.
+
+## License
+
+This project is licensed under the [MIT License](LICENSE).

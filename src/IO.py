@@ -25,21 +25,38 @@ def read_xyz(xyz_filename):
     periodic_table = pd.read_csv(pt_file)
 
     # For each atom on the list, find it in the periodic table and add its
-    # number of electrons in a new column
+    # atomic number and number of electrons in new columns
     electrons = []
+    atomic_numbers = []
     for i in range(len(nxyz)):
         atom = nxyz['atom'][i]
         for j in range(len(periodic_table)):
             if periodic_table['Symbol'][j] == atom:
                 electrons.append(periodic_table['NumberofElectrons'][j])
-
-    # apply the charge to the first atom on the list
-    electrons[0] -= charge
+                atomic_numbers.append(periodic_table['AtomicNumber'][j])
 
     nxyz['nelectrons'] = pd.Series(electrons)
+    nxyz['atomic_number'] = pd.Series(atomic_numbers)
 
     return title, charge, nxyz
 
+# Function to extract coordinates, number of electrons and Z from xyz dataframe
+def extract_R_ne(charge, nxyz):
+    # Sum the number of electrons and apply the charge
+    ne = sum(nxyz['nelectrons']) - charge
+
+    # Store the atom coordinates and atomic numbers in single vectors:
+    # R = [x1, y1, z1, x2, y2, z2, ..., x_m, y_m, z_m]
+    # Z = [Z1, Z2, ..., Z_m]
+    R = []
+    Z = []
+    for index, row in nxyz.iterrows():
+        R.extend([row['x'], row['y'], row['z']])
+        Z.extend([row['atomic_number']])
+
+    return ne, R, Z
+
+# Function to read the input file
 def read_input(input_filename):
     # Open input_file
     input_file = open(input_filename, "r") 
@@ -68,13 +85,17 @@ def read_input(input_filename):
     input_file.readline()
     mc_trials = int(input_file.readline())
 
-    # Read lim
+    # Read value of dt for VMC
     input_file.readline()
-    lim = float(input_file.readline())
+    dt_VMC = float(input_file.readline())
 
-    # Read value of dt
+    # Read value of dt for metropolis
     input_file.readline()
-    dt = float(input_file.readline())
+    dt_metro = float(input_file.readline())
+
+    # Read value of dt for PDMC
+    input_file.readline()
+    dt_PDMC = float(input_file.readline())
 
     # Read value of tau
     input_file.readline()
@@ -86,14 +107,25 @@ def read_input(input_filename):
 
     # Close input_file
     input_file.close() 
-    return calculation_type, a, nmc, mc_trials, lim, dt, tau, eref
+    return calculation_type, a, nmc, mc_trials, dt_VMC, dt_metro, dt_PDMC, tau, eref
 
-def print_input(title, charge, nxyz):
+def print_input(title, a, charge, nxyz, ne, R, Z):
     print('title:', title)
-    print('Number of electrons:', sum(nxyz['nelectrons']) + charge)
+    print('Slater orbital exponent, a:', a)
+    print('\nxyz (in a.u.):\n', nxyz[['atom', 'x', 'y', 'z', 'atomic_number', 'nelectrons']])
+    print('\nNumber of electrons:', ne + charge)
     print('Charge:', charge)
-    print('Total number of electrons:', sum(nxyz['nelectrons']))
-    print('xyz (in a.u.):\n', nxyz[['atom', 'x', 'y', 'z']])
+    print('Effective number of electrons (considering charge):', ne)
+
+def print_MC_data(mc_trials, nmc, dt_VMC, dt_metro, dt_PDMC, tau, eref):
+    print('Number of MC steps:', nmc)
+    print('Number of MC simulations:', mc_trials)
+    print('dt(VMC):', dt_VMC)
+    print('dt(metropolis):', dt_metro)
+    print('dt(PDMC):', dt_PDMC)
+    print('tau (for PDMC):', tau)
+    print('Eref (for PDMC):', eref)
+
 
 # -----------------------------------------------------------------------------
 # Formatting functions

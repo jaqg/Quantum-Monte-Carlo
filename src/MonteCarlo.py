@@ -411,6 +411,7 @@ def output_VMC(sVMC, syMe, geMe):
     section('Variational Monte Carlo')
     # -----------------------------------------------------------------------------
     
+    print('Exact results +- error:\n')
     print('E = ', float_format(sVMC.E), '+-', float_format(sVMC.s))
     
     # -----------------------------------------------------------------------------
@@ -418,6 +419,7 @@ def output_VMC(sVMC, syMe, geMe):
     section('Metropolis (symmetric) MC')
     # -----------------------------------------------------------------------------
     
+    print('Exact results +- error:\n')
     print('E = ', float_format(syMe.E), '+-', float_format(syMe.s))
     print('Ratio = ', float_format(syMe.A), '+-', float_format(syMe.sA))
     
@@ -425,6 +427,7 @@ def output_VMC(sVMC, syMe, geMe):
     section('Metropolis (generalized) MC')
     # -----------------------------------------------------------------------------
     
+    print('Exact results +- error:\n')
     print('E = ', float_format(geMe.E), '+-', float_format(geMe.s))
     print('Ratio = ', float_format(geMe.A), '+-', float_format(geMe.sA))
 
@@ -470,6 +473,7 @@ def output_PDMC(sPDMC):
     section('Pure Diffusion MC')
     # -----------------------------------------------------------------------------
 
+    print('Exact results +- error:\n')
     print('E = ', float_format(sPDMC.E), '+-', float_format(sPDMC.s))
     print('Ratio = ', float_format(sPDMC.A), '+-', float_format(sPDMC.sA))
     
