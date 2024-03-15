@@ -1,7 +1,5 @@
 # Quantum Monte Carlo
 
-Code based on [Anthony Scemama course](https://trex-coe.github.io/qmc-lttc-2023/).
-
 This repository contains Python implementations of Monte Carlo algorithms for simulating quantum systems.
 
 ## Table of Contents
@@ -10,18 +8,40 @@ This repository contains Python implementations of Monte Carlo algorithms for si
 - [Project Overview](#project-overview)
 - [Installation](#installation)
 - [Usage](#usage)
-- [Documentation](#documentation)
+- [Theoretical Background](#theoretical-background)
 - [Examples](#examples)
 - [Contribution](#contribution)
 - [License](#license)
 
 ## Project Overview
+This project is aimed to develop robust and efficient QMC algorithms tailored
+specifically for calculating the ground state energy of molecules.
+The ground state energy is a fundamental property of a molecular system and
+plays a crucial role in understanding its stability, reactivity, and other
+physical properties.
+By employing QMC methods, the ground state energy of molecules can be accurately 
+approximated with low resources and an easy-to-use code, overcoming some of the limitations of
+traditional computational chemistry techniques.
+
+### Purpose
+
+The primary objective of this project is to provide a humble but efficient framework
+for calculating the ground state energy of molecules using Quantum Monte Carlo methods.
+By employing Variational Monte Carlo (VMC) techniques, including symmetric and
+general Metropolis algorithms, as well as Pure Diffusion Monte Carlo (PDMC), 
+accurate estimates of the ground state energy for a variety of molecular systems
+can be obtained.
+
+### Features
+
+- Implementation of Quantum Monte Carlo algorithms tailored for ground state energy calculations of molecules.
+- Variational Monte Carlo methods with symmetric and general Metropolis algorithms.
+- Pure diffusion Monte Carlo for accurate ground state energy estimation.
 
 ---
 ## Folder Structure
 
-- **documentation**: Contains documentation files.
-- **examples**: Contains input files for the examples H, H2, H2+, H3+, and He. Additionally, it includes a folder named `reference-calculation` with energies calculated using Gaussian software at HF/3-21G level.
+- **examples**: Contains input files for the examples H, H2, H2+, H3+, and He. Additionally, it includes the folder `reference-calculation/` with energies calculated using Gaussian software at HF/3-21G level.
 - **plots**: Contains generated plots from the program, specifically from the scripts `src/make-plots.py` and `src/test-derivatives.py`.
 - **src**: Contains all code and scripts.
 
@@ -63,7 +83,8 @@ pip install -r requirements.txt
 
 ## Usage
 
-Once you have installed the dependencies, you can run the provided scripts to simulate quantum systems using Monte Carlo algorithms. For example:
+Once you have installed the dependencies, you can run the provided
+make rules in the Makefile.
 
 ### Makefile
 
@@ -73,9 +94,30 @@ Once you have installed the dependencies, you can run the provided scripts to si
 - **derivatives**: Executes the `src/test-derivatives.py` program.
 - **clean_examples**: Deletes output files from the `examples/` folder.
 
-## Documentation
+## Theoretical background
+
+The code is based on [Anthony Scemama course](https://trex-coe.github.io/qmc-lttc-2023/).
+
+Also, some theoretical background can be found in `theory.pdf`, with the
+detail derivation of the analitic expressions used in the `hamiltonian.py` 
+functions.
 
 ## Examples
+
+In the `examples/` folder you can find the XYZ input files for the following examples:
+- H
+- H2
+- H2+
+- H3+
+- He
+
+By executing 
+```bash
+make examples
+```
+the script `examples/run_examples.sh` is executed, wchich runs the main program
+following the `examples/INPUT` parameters on each of the `*.xyz` file,
+generating the corresponding `*.out` file.
 
 ## Contribution
 
@@ -89,4 +131,4 @@ Contributions are welcome! If you would like to contribute to this project, foll
 
 ## License
 
-This project is licensed under the [MIT License](LICENSE).
+This project is licensed under the [GNU GENERAL PUBLIC LICENSE](LICENSE).
