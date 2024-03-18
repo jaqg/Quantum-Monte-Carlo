@@ -1,8 +1,64 @@
 \graphicspath{{./figures/}}
 
+The main objective of this program is finding approximate solutions to the
+non-relativistic time-independent Schrödinger equation 
+\begin{equation}
+    \hat{H} \Ket{\Psi} = E \Ket{\Psi}
+    ,
+\end{equation}
+where $\hat{H}$ is the Hamiltonian operator for a system of nuclei and electron 
+described by position vectors $ \mat{R}_I$ and $ \mat{r}_i$, respectively.
+
+\textit{Note:} to keep the notation simple, the electrons are indexed with lower case
+letters, $i,j,k,\ldots$ and the nucleus with upper case letters, $I,J,K\ldots$.
+
+\textit{Note:} this project is done in \textbf{atomic units} system.
+
 % ------
 \section{Definitions}
 % ------
+In atomic units, the Hamiltonian for $n$ electrons and $m$ nuclei is 
+\begin{equation}
+    \hat{H} =
+    \hat{T}_{\mathrm{e}} +
+    \hat{T}_{\mathrm{N}} +
+    \hat{V}_{\mathrm{eN}} +
+    \hat{V}_{\mathrm{ee}} +
+    \hat{V}_{\mathrm{N N}}
+    ,
+\end{equation}
+where $\hat{T}_{\mathrm{e}}$ and $\hat{T}_{\mathrm{N}}$ are the kinetic energy
+of the electrons and nuclei, respectively 
+\begin{align}
+    \hat{T}_{\mathrm{e}} &= - \sum_{i=1}^{n} \frac{1}{2} \laplacian_i, \\
+    \hat{T}_{\mathrm{N}} &= - \sum_{I=1}^{m} \frac{1}{2 M_I} \laplacian_I,
+\end{align}
+where $\laplacian$ is the Laplacian operator and $M_I$ is the ratio of the mass
+of the nucleus $I$ to the mass of an electron.
+Following the Born-Oppenheimer approximation, $\hat{T}_{\mathrm{N}} = 0$.
+
+The coulomb attraction between electrons and nuclei, $\hat{V}_{\mathrm{eN}}$,
+is given by 
+\begin{equation}
+    \hat{V}_{\mathrm{eN}} =
+    - \sum_{i=1}^{n} \sum_{I=1}^{m} \frac{Z_I}{\left| \mat{r}_i - \mat{R}_I \right|}
+    ,
+\end{equation}
+where $Z_I$ is the atomic number of nucleus $I$.
+
+The repulsion between electrons, $\hat{V}_{\mathrm{ee}}$, is given by 
+\begin{equation}
+    \hat{V}_{\mathrm{ee}} =
+    \sum_{i=1}^{n}  \sum_{j>i}^{n} \frac{1}{\left| \mat{r}_i - \mat{r}_j \right|}
+    ,
+\end{equation}
+and the repulsion between nuclei, $\hat{V}_{\mathrm{N N}}$
+\begin{equation}
+    \hat{V}_{\mathrm{N N}} =
+    \sum_{I=1}^{m}  \sum_{J>I}^{m} \frac{Z_I Z_J}{\left| \mat{R}_I - \mat{R}_J \right|}
+    .
+\end{equation}
+
 The molecular orbitals (MO's), our wavefunctions, $\psi$, are formed as Linear
 Combinations of atomic orbitals (AO's).
 The AO basis functions used are the normalized $1s$ \textit{Slater type function} 
@@ -23,7 +79,7 @@ $ \mat{r}$ and $ \mat{R}$
     \sqrt{\left( x - X \right)^{2} + \left( y - Y \right)^{2} + \left( z - Z \right)^{2}}
     ,
 \end{equation}
-where lower case letters reffer to the cartesian coordinates of 
+where lower case letters refer to the Cartesian coordinates of 
 $ \mat{r} = \left( x\ y\ z \right)$ and upper case to 
 $ \mat{R} = \left( X\ Y\ Z \right)$.
 
@@ -53,12 +109,10 @@ Then, the wavefunction for $n$ electrons and $m$ atoms (nucleus) is given by
     \prod_{i=1}^{n} \left( \sum_{I=1}^{m} \phi_{iI} \right)
     ,
 \end{equation}
-where, to keep the notation simple, the electrons are indexed with lower case
-letters and the nucleus with upper case.
 For $n$ electrons and $m$ nucleus, $\mat{r}$ has $3n$ components and
 $\mat{R}$ has $3m$ components.
 
-The drif vector is given by 
+The drift vector is given by 
 \begin{equation} \label{eq:definition-drift-vector}
     \frac{
         \nabla \psi \left( \mat{r} \right)
@@ -94,7 +148,7 @@ The local kinetic energy is defined as
     - \frac{1}{2} \frac{\laplacian \psi \left( \mat{r} \right)}{\psi \left( \mat{r} \right)}
     ,
 \end{equation}
-where the laplacian reads
+where the Laplacian reads
 \begin{equation} \label{eq:definition-laplacian}
     \laplacian 
     =
@@ -102,7 +156,7 @@ where the laplacian reads
     .
 \end{equation}
 
-To compute the drif vector and kinetic energy, the gradient and laplacian of
+To compute the drift vector and kinetic energy, the gradient and Laplacian of
 the wavefunction over the electron positions, $ \mat{r}$, are needed.
 Firstly, to easy the upcoming development, the first and second partial 
 derivatives of the basis functions are calculated.
@@ -488,7 +542,7 @@ component can be expressed in terms of the first partial derivative as
     \phi_{iI}
     ,
 \end{equation}
-which can be usefull for testing.
+which can be useful for testing.
 
 Now, recalling \cref{eq:partial-phi-lambda}
 \begin{equation}
@@ -622,8 +676,8 @@ only the $j\not= i$ components that are not differentiated survive. Then
 \end{equation}
 
 Since both in the drift vector and the kinetic energy 
-(\cref{eq:definition-drift-vector,eq:definition-kinetic-energy}) the gradient and the laplacian
-are divided by $\psi$, it is convinient to express those in terms of
+(\cref{eq:definition-drift-vector,eq:definition-kinetic-energy}) the gradient and the Laplacian
+are divided by $\psi$, it is convenient to express those in terms of
 $\psi$.
 
 Given the definition of $\psi$ in \cref{eq:definition-psi}, the product can be
@@ -694,7 +748,7 @@ components reads
 \end{equation}
 where $C_{\lambda,iI}$ is given by \cref{eq:definition-CiI}.
 
-For the laplacian, the second partial derivatives are needed.
+For the Laplacian, the second partial derivatives are needed.
 Following the same scheme, the partial derivative over the $x_i$ component of
 $\partial_{x_i} \psi$ from  \cref{eq:fd-psi-2} is taken 
 \begin{equation}
@@ -1215,7 +1269,7 @@ where $C_{\lambda,iI}$ is given by \cref{eq:definition-CiI}.
 % ------
 \section{Laplacian \& kinetic energy}
 % ------
-The laplacian given in \cref{eq:definition-laplacian} is given by summing
+The Laplacian given in \cref{eq:definition-laplacian} is given by summing
 over all $i$ electrons 
 \begin{equation} \label{eq:laplacian-1}
     \laplacian \psi \left( \mat{r} \right)

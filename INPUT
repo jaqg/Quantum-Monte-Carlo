@@ -3,7 +3,7 @@ PDMC
 # Slater orbital exponent, a
 1.2
 # Number of steps for the MC calculation
-100
+10000
 # Number of MC calculations
 30
 # Value for delta L
